@@ -18,6 +18,10 @@ services:
       context: .
       dockerfile: server.dockerfile
     image: verifymy_backend_golang_server
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB_PORT: ${MYSQL_DB_CONTAINER_PORT}
+      MYSQL_DB_NAME: ${MYSQL_DB}
     depends_on:
       - db
     ports:
