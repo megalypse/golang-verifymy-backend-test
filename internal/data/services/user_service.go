@@ -1,4 +1,4 @@
-package serviceuser
+package services
 
 import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
