@@ -1,0 +1,24 @@
+services:
+  db:
+    build:
+      context: .
+      dockerfile: mysql_db.dockerfile
+    image: verifymy_mysql_db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_TCP_PORT: ${MYSQL_DB_HOST_PORT}
+    ports:
+      - "${MYSQL_DB_HOST_PORT}:${MYSQL_DB_CONTAINER_PORT}"
+
+  server:
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    image: verifymy_backend_golang_server
+    depends_on:
+      - db
+    ports:
+      - "${SERVER_HOST_PORT}:${SERVER_CONTAINER_PORT}"
