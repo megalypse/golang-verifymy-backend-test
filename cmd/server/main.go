@@ -4,9 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	routerFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/router"
 )
 
 func main() {
+	router := routerFactory.GetRouter()
 	rawPort := os.Getenv("SERVER_CONTAINER_PORT")
 	port := ":" + rawPort
 
