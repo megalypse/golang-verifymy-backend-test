@@ -6,6 +6,11 @@ clean:
 	docker compose stop server
 	docker rmi ${IMAGE_ID} -f
 
+DB_IMAGE_ID := ${shell docker images 'verifymy_mysql_db' -a -q}
+clean-db:
+	docker compose down
+	docker rmi ${DB_IMAGE_ID} -f
+
 DOC_DEPS_PATH=./internal/domain/models
 SWAGGER_ENTRYPOINT=./internal/main/factory/router_factory.go
 generate-docs-silent:

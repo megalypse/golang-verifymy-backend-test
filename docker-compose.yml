@@ -17,7 +17,7 @@ services:
     build:
       context: .
       dockerfile: server.dockerfile
-    image: verifymy_backend_golang_server
+    image: verifymy_backend_test_golang_server
     environment:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DB_PORT: ${MYSQL_DB_CONTAINER_PORT}
