@@ -5,6 +5,7 @@ type User struct {
 	Age          int           `json:"age"`
 	Email        string        `json:"email"`
 	UserPassword *UserPassword `json:"security"`
+	AddressList  []Address     `json:"address_list"`
 
 	BaseEntity
 }

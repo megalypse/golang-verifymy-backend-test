@@ -7,15 +7,15 @@ import (
 
 type MySqlAddressRepository struct{}
 
-func (MySqlAddressRepository) Create(repository.Transaction, *models.Address) (*models.Address, *models.CustomError) {
-	return nil, nil
+func (MySqlAddressRepository) Create(repository.Transaction, *models.Address) (int64, *models.CustomError) {
+	return 0, nil
 }
 
 func (MySqlAddressRepository) Delete(repository.Transaction, int64) *models.CustomError {
 	return nil
 }
 
-func (MySqlAddressRepository) GetLatestByUserId(repository.Transaction, int64) (*models.Address, *models.CustomError) {
+func (MySqlAddressRepository) GetAllByUserId(repository.Transaction, int64) ([]models.Address, *models.CustomError) {
 	return nil, nil
 }
 

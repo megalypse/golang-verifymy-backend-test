@@ -10,7 +10,10 @@ var userController controllers.BaseController
 
 func init() {
 	userController = usercontroller.UserController{
-		CreateUserUsecase: userUsecaseFactory.GetCreateUserUsecase(),
+		CreateUserUsecase:   userUsecaseFactory.GetCreateUserUsecase(),
+		UpdateUserUsecase:   userUsecaseFactory.GetUpdateUserUsecase(),
+		DeleteUserUsecase:   userUsecaseFactory.GetDeleteUserUsecase(),
+		FindUserByIdUsecase: userUsecaseFactory.GetFindUserByIdUsecase(),
 	}
 }
 

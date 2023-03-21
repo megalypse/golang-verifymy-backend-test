@@ -1,11 +1,14 @@
 package models
 
 type Address struct {
-	ZipCode    string
-	StreetName string
-	Number     int64
-	State      string
-	Country    string
+	AddressAlias string
+	ZipCode      string
+	StreetName   string
+	Number       int64
+	State        string
+	Country      string
+
+	UserId int64
 
 	BaseEntity
 }
