@@ -1,6 +1,9 @@
 package repositorymysql
 
 import (
+	"database/sql"
+	"log"
+
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/db/repositorymysql/config"
@@ -15,7 +18,13 @@ func (MySqlUserRepository) NewConnection() repository.Connectable {
 }
 
 func (MySqlUserRepository) Create(tx repository.Transaction, source *models.User) (int64, *models.CustomError) {
-	_, err := tx.Exec()
+	result, err := tx.Exec(`
+	INSERT INTO users(name, email, age)
+	VALUES (?, ?, ?)
+	`, source.Name, source.Email, source.Age)
+
+	sqlResult := result.(sql.Result)
+	log.Println(sqlResult.LastInsertId())
 	if err != nil {
 		return 0, err
 	}

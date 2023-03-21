@@ -2,6 +2,7 @@ package repositorymysql
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
@@ -19,6 +20,7 @@ func (mst *MySqlTransactionable) CloseConnection() {
 func (mst MySqlTransactionable) BeginTransaction() (repository.Transaction, *models.CustomError) {
 	tx, err := mst.connection.Begin()
 	if err != nil {
+		log.Println(err)
 		return nil, &models.CustomError{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -77,16 +79,7 @@ func (mst *MySqlTransaction) Exec(args ...any) (any, *models.CustomError) {
 			}
 		}
 
-		id, err := result.LastInsertId()
-		if err != nil {
-			return nil, &models.CustomError{
-				Code:    http.StatusInternalServerError,
-				Message: "Failed on getting last inserted ID",
-				Source:  err,
-			}
-		}
-
-		return id, nil
+		return result, nil
 	default:
 		return nil, &models.CustomError{
 			Code:    http.StatusBadRequest,

@@ -1,9 +1,9 @@
-CREATE TABLE address (
+CREATE TABLE addresses (
   id BIGINT NOT NULL AUTO_INCREMENT,
   alias VARCHAR(255)
   zipcode VARCHAR(255),
   street_name VARCHAR(255),
-  number BIGINT,
+  number VARCHAR(255),
   state VARCHAR(255),
   country VARCHAR(255),
   user_id BIGINT NOT NULL,

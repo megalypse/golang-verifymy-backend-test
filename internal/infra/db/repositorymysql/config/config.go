@@ -3,6 +3,7 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -11,6 +12,7 @@ import (
 var mysqlPassword string
 var mysqlPort string
 var mysqlDbName string
+var mysqlDbHost string
 
 var connectionString string
 
@@ -18,8 +20,9 @@ func init() {
 	mysqlPassword = os.Getenv("MYSQL_PASSWORD")
 	mysqlPort = os.Getenv("MYSQL_DB_PORT")
 	mysqlDbName = os.Getenv("MYSQL_DB_NAME")
+	mysqlDbHost = os.Getenv("MYSQL_DB_HOST")
 
-	connectionString = fmt.Sprintf("root:%s@tcp(127.0.0.1:%s)/%s", mysqlPassword, mysqlPort, mysqlDbName)
+	connectionString = fmt.Sprintf("root:%s@tcp(%s:%s)/%s", mysqlPassword, mysqlDbHost, mysqlPort, mysqlDbName)
 }
 
 func GetMySqlConnection() *sql.DB {
@@ -28,7 +31,12 @@ func GetMySqlConnection() *sql.DB {
 		panic(err.Error())
 	}
 
-	fmt.Println("Success!")
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	log.Println("New MySql connection created")
 
 	return db
 }
