@@ -4,6 +4,7 @@ import (
 	service "github.com/megalypse/golang-verifymy-backend-test/internal/data/services/user"
 	usecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/user"
 	repositoryFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
+	securityFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/service"
 )
 
 var createUserUsecase usecases.CreateUser
@@ -16,6 +17,7 @@ func init() {
 		repositoryFactory.GetUserRepository(),
 		repositoryFactory.GetMySqlUserPasswordRepository(),
 		repositoryFactory.GetMySqlAddressRepository(),
+		securityFactory.GetBCryptSecurityService(),
 	)
 
 	createUserUsecase = userService
