@@ -40,7 +40,7 @@ func makeMainConnection() *sql.DB {
 		panic(err.Error())
 	}
 
-	log.Println("New MySql connection created")
+	log.Println("Successfully connected to MySql database")
 
 	return db
 }

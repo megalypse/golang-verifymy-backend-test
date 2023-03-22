@@ -20,7 +20,11 @@ func (us UserService) Delete(ctx context.Context, id int64) *models.CustomError 
 		return err
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 
 	return nil
 }

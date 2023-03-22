@@ -31,51 +31,52 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 
 	connection := us.userRepository.NewConnection(ctx)
 	defer connection.CloseConnection()
-	tx, cErr := connection.BeginTransaction()
+
+	writeTx, cErr := connection.BeginTransaction()
 	if cErr != nil {
 		return nil, cErr
 	}
 
-	userId, cErr := us.userRepository.Create(tx, source)
+	userId, cErr := us.userRepository.Create(writeTx, source)
 	if cErr != nil {
-		tx.Rollback()
+		writeTx.Rollback()
 		return nil, cErr
 	}
 
-	_, cErr = us.saveUserPassword(tx, models.UserPassword{
+	_, cErr = us.saveUserPassword(writeTx, models.UserPassword{
 		UserId:   userId,
 		Password: protectedPassword,
 		Salt:     salt,
 	})
 	if cErr != nil {
-		tx.Rollback()
+		writeTx.Rollback()
 		return nil, cErr
 	}
 
-	cErr = us.saveAddresses(tx, source.AddressList, userId)
+	cErr = us.saveAddresses(writeTx, source.AddressList, userId)
 	if cErr != nil {
-		tx.Rollback()
+		writeTx.Rollback()
 		return nil, cErr
 	}
 
-	cErr = tx.Commit()
+	cErr = writeTx.Commit()
 	if cErr != nil {
-		tx.Rollback()
+		writeTx.Rollback()
 		return nil, cErr
 	}
 
-	rtx, cErr := connection.BeginTransaction()
+	readTx, cErr := connection.BeginTransaction()
 	if cErr != nil {
 		return nil, cErr
 	}
 
-	fullSavedUser, cErr := us.getFullSavedUser(rtx, userId)
+	fullSavedUser, cErr := us.getFullSavedUser(readTx, userId)
 	if cErr != nil {
-		rtx.Rollback()
+		readTx.Rollback()
 		return nil, cErr
 	}
 
-	tx.Commit()
+	writeTx.Commit()
 	return fullSavedUser, nil
 }
 
