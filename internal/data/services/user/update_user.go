@@ -15,12 +15,21 @@ func (us UserService) Update(ctx context.Context, source *models.User) (*models.
 		return nil, err
 	}
 
-	result, err := us.userRepository.Update(tx, source)
+	err = us.userRepository.Update(tx, source)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
-	tx.Commit()
-	return result, nil
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	user, err := us.findById(ctx, connection, source.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

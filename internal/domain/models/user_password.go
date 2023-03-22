@@ -7,5 +7,5 @@ type UserPassword struct {
 	UserId int64
 
 	Identity
-	CreatedAt
+	CreatedDate
 }

@@ -9,23 +9,22 @@ import (
 	internal "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/internal"
 )
 
-func (MySqlUserRepository) Delete(tx repository.Transaction, id int64) *models.CustomError {
+func (MySqlUserRepository) Update(tx repository.Transaction, source *models.User) *models.CustomError {
 	result, err := tx.Exec(`
 	UPDATE users
-	SET deleted_at = CURRENT_TIMESTAMP
+	SET name = ?, email = ?, age = ?
 	WHERE id = ?
-	`, id)
-
+	`, source.Name, source.Email, source.Age, source.Id)
 	if err != nil {
 		return err
 	}
 
-	rowsAffected, err := internal.GetAffectedRows(result.(sql.Result))
+	affectedRows, err := internal.GetAffectedRows(result.(sql.Result))
 	if err != nil {
 		return err
 	}
 
-	if rowsAffected < 1 {
+	if affectedRows < 1 {
 		return customerrors.MakeNotFoundError("User not found")
 	}
 

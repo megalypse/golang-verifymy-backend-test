@@ -2,13 +2,13 @@ package factory
 
 import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
-	repositorymysql "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql"
+	mysqlAddressRepository "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/address"
 )
 
 var addressRepository repository.AddressRepository
 
 func init() {
-	addressRepository = repositorymysql.MySqlAddressRepository{}
+	addressRepository = mysqlAddressRepository.MySqlAddressRepository{}
 }
 
 func GetMySqlAddressRepository() repository.AddressRepository {

@@ -11,6 +11,63 @@ import (
 )
 
 func (us UserService) Create(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
+	protectedUserPassword, err := secureUserPassword(source)
+	if err != nil {
+		return nil, err
+	}
+
+	connection := us.userRepository.NewConnection(ctx)
+	defer connection.CloseConnection()
+
+	writeTx, err := connection.BeginTransaction()
+	if err != nil {
+		return nil, err
+	}
+
+	userId, err := us.userRepository.Create(writeTx, source)
+	if err != nil {
+		writeTx.Rollback()
+		return nil, err
+	}
+
+	_, err = us.saveUserPassword(writeTx, models.UserPassword{
+		UserId:   userId,
+		Password: protectedUserPassword.Password,
+		Salt:     protectedUserPassword.Salt,
+	})
+	if err != nil {
+		writeTx.Rollback()
+		return nil, err
+	}
+
+	err = us.saveUserAddressList(writeTx, source.AddressList, userId)
+	if err != nil {
+		writeTx.Rollback()
+		return nil, err
+	}
+
+	err = writeTx.Commit()
+	if err != nil {
+		writeTx.Rollback()
+		return nil, err
+	}
+
+	readTx, err := connection.BeginTransaction()
+	if err != nil {
+		return nil, err
+	}
+
+	fullSavedUser, err := us.getUserWithAddresses(readTx, userId)
+	if err != nil {
+		readTx.Rollback()
+		return nil, err
+	}
+
+	writeTx.Commit()
+	return fullSavedUser, nil
+}
+
+func secureUserPassword(source *models.User) (*models.UserPassword, *models.CustomError) {
 	salt := make([]byte, 16)
 	if _, err := rand.Read(salt); err != nil {
 		return nil, &models.CustomError{
@@ -29,63 +86,13 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 		}
 	}
 
-	connection := us.userRepository.NewConnection(ctx)
-	defer connection.CloseConnection()
-
-	writeTx, cErr := connection.BeginTransaction()
-	if cErr != nil {
-		return nil, cErr
-	}
-
-	userId, cErr := us.userRepository.Create(writeTx, source)
-	if cErr != nil {
-		writeTx.Rollback()
-		return nil, cErr
-	}
-
-	_, cErr = us.saveUserPassword(writeTx, models.UserPassword{
-		UserId:   userId,
+	return &models.UserPassword{
 		Password: protectedPassword,
 		Salt:     salt,
-	})
-	if cErr != nil {
-		writeTx.Rollback()
-		return nil, cErr
-	}
-
-	cErr = us.saveAddresses(writeTx, source.AddressList, userId)
-	if cErr != nil {
-		writeTx.Rollback()
-		return nil, cErr
-	}
-
-	cErr = writeTx.Commit()
-	if cErr != nil {
-		writeTx.Rollback()
-		return nil, cErr
-	}
-
-	readTx, cErr := connection.BeginTransaction()
-	if cErr != nil {
-		return nil, cErr
-	}
-
-	fullSavedUser, cErr := us.getFullSavedUser(readTx, userId)
-	if cErr != nil {
-		readTx.Rollback()
-		return nil, cErr
-	}
-
-	writeTx.Commit()
-	return fullSavedUser, nil
+	}, nil
 }
 
-func (us UserService) getFullSavedUser(tx repository.Transaction, userId int64) (*models.User, *models.CustomError) {
-	savedUserPassword, cErr := us.userPasswordRepository.FindLatestByUserId(tx, userId)
-	if cErr != nil {
-		return nil, cErr
-	}
-
+func (us UserService) getUserWithAddresses(tx repository.Transaction, userId int64) (*models.User, *models.CustomError) {
 	savedAddressList, cErr := us.addressRepository.GetAllByUserId(tx, userId)
 	if cErr != nil {
 		return nil, cErr
@@ -96,13 +103,12 @@ func (us UserService) getFullSavedUser(tx repository.Transaction, userId int64) 
 		return nil, cErr
 	}
 
-	savedUser.UserPassword = savedUserPassword
 	savedUser.AddressList = savedAddressList
 
 	return savedUser, nil
 }
 
-func (us UserService) saveAddresses(tx repository.Transaction, source []models.Address, userId int64) *models.CustomError {
+func (us UserService) saveUserAddressList(tx repository.Transaction, source []models.Address, userId int64) *models.CustomError {
 	addressList := make([]models.Address, 0, len(source))
 	for _, address := range source {
 		address.UserId = userId

@@ -1,4 +1,4 @@
-package repositorymysql
+package addressrepository
 
 import (
 	"database/sql"
@@ -7,8 +7,6 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	internal "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/internal"
 )
-
-type MySqlAddressRepository struct{}
 
 func (MySqlAddressRepository) Create(tx repository.Transaction, source *models.Address) (int64, *models.CustomError) {
 	result, cErr := tx.Exec(`
@@ -28,16 +26,4 @@ func (MySqlAddressRepository) Create(tx repository.Transaction, source *models.A
 	}
 
 	return internal.GetLastInsertedId(result.(sql.Result))
-}
-
-func (MySqlAddressRepository) Delete(repository.Transaction, int64) *models.CustomError {
-	return nil
-}
-
-func (MySqlAddressRepository) GetAllByUserId(repository.Transaction, int64) ([]models.Address, *models.CustomError) {
-	return nil, nil
-}
-
-func (MySqlAddressRepository) Update(repository.Transaction, *models.Address) (*models.Address, *models.CustomError) {
-	return nil, nil
 }

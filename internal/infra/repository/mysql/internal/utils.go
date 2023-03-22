@@ -20,7 +20,7 @@ func GetLastInsertedId(result sql.Result) (int64, *models.CustomError) {
 	return id, nil
 }
 
-func GetRowsAffected(result sql.Result) (int64, *models.CustomError) {
+func GetAffectedRows(result sql.Result) (int64, *models.CustomError) {
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return 0, &models.CustomError{
