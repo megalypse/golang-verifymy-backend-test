@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -18,11 +19,14 @@ func WriteJsonResponse(w http.ResponseWriter, response controllers.HttpResponse)
 
 func ParseRequest[T any](r *http.Request, params *[]string) (*controllers.ParsedRequest[T], *models.CustomError) {
 	holder := new(T)
-	if err := json.NewDecoder(r.Body).Decode(holder); err != nil {
-		return nil, &models.CustomError{
-			Code:    http.StatusInternalServerError,
-			Message: "Failed on parsing request body",
-			Source:  err,
+
+	if reflect.TypeOf(*holder) != reflect.TypeOf(Void{}) {
+		if err := json.NewDecoder(r.Body).Decode(holder); err != nil {
+			return nil, &models.CustomError{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+				Source:  err,
+			}
 		}
 	}
 

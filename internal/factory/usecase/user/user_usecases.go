@@ -1,9 +1,9 @@
 package factory
 
 import (
-	"github.com/megalypse/golang-verifymy-backend-test/internal/data/services"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/usecases"
-	userRepositoryFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
+	service "github.com/megalypse/golang-verifymy-backend-test/internal/data/services/user"
+	usecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/user"
+	repositoryFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 )
 
 var createUserUsecase usecases.CreateUser
@@ -12,7 +12,11 @@ var deleteUserUsecase usecases.DeleteUser
 var findUserByIdUsecase usecases.FindUserById
 
 func init() {
-	userService := services.NewUserService(userRepositoryFactory.GetUserRepository())
+	userService := service.NewUserService(
+		repositoryFactory.GetUserRepository(),
+		repositoryFactory.GetMySqlUserPasswordRepository(),
+		repositoryFactory.GetMySqlAddressRepository(),
+	)
 
 	createUserUsecase = userService
 	updateUserUsecase = userService

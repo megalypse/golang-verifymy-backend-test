@@ -11,7 +11,7 @@ import (
 func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 	userIdParam := "userId"
 
-	request, err := internal.ParseRequest[any](r, &[]string{userIdParam})
+	request, err := internal.ParseRequest[internal.Void](r, &[]string{userIdParam})
 	if err != nil {
 		internal.WriteError(w, err)
 		return
@@ -23,7 +23,7 @@ func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := uc.FindUserByIdUsecase.FindById(userId)
+	user, err := uc.FindUserByIdUsecase.FindById(r.Context(), userId)
 	if err != nil {
 		internal.WriteError(w, err)
 		return
@@ -38,7 +38,7 @@ func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 
 func (uc UserController) deleteUser(w http.ResponseWriter, r *http.Request) {
 	userIdParam := "userId"
-	request, err := internal.ParseRequest[any](r, &[]string{userIdParam})
+	request, err := internal.ParseRequest[internal.Void](r, &[]string{userIdParam})
 	if err != nil {
 		internal.WriteError(w, err)
 		return
@@ -50,7 +50,7 @@ func (uc UserController) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = uc.DeleteUserUsecase.Delete(userId); err != nil {
+	if err = uc.DeleteUserUsecase.Delete(r.Context(), userId); err != nil {
 		internal.WriteError(w, err)
 		return
 	}
@@ -68,7 +68,7 @@ func (uc UserController) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdUser, err := uc.CreateUserUsecase.Create(customRequest.Body)
+	createdUser, err := uc.CreateUserUsecase.Create(r.Context(), customRequest.Body)
 	if err != nil {
 		internal.WriteError(w, err)
 		return
@@ -88,7 +88,7 @@ func (uc UserController) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedUser, err := uc.UpdateUserUsecase.Update(request.Body)
+	updatedUser, err := uc.UpdateUserUsecase.Update(r.Context(), request.Body)
 	if err != nil {
 		internal.WriteError(w, err)
 		return

@@ -3,7 +3,7 @@ package usercontroller
 import (
 	"net/http"
 
-	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/usecases"
+	usecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/user"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
 )
 
@@ -34,7 +34,7 @@ func (uc UserController) GetHandlers() []controllers.RouteDefinition {
 		{
 			Method:       http.MethodGet,
 			Route:        "/user/{userId}",
-			HandlingFunc: uc.deleteUser,
+			HandlingFunc: uc.findUserById,
 		},
 	}
 }

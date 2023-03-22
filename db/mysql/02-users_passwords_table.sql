@@ -1,0 +1,11 @@
+CREATE TABLE users_passwords (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  password_hash VARBINARY(60) NOT NULL,
+  salt VARBINARY(16) NOT NULL,
+  user_id BIGINT NOT NULL,
+
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
