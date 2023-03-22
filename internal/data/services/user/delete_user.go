@@ -1,9 +1,13 @@
 package service
 
-import "github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+import (
+	"context"
 
-func (us UserService) Delete(id int64) *models.CustomError {
-	connection := us.userRepository.NewConnection()
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+)
+
+func (us UserService) Delete(ctx context.Context, id int64) *models.CustomError {
+	connection := us.userRepository.NewConnection(ctx)
 	defer connection.CloseConnection()
 
 	tx, err := connection.BeginTransaction()

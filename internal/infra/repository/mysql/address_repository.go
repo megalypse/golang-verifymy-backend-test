@@ -2,10 +2,10 @@ package repositorymysql
 
 import (
 	"database/sql"
-	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+	internal "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/internal"
 )
 
 type MySqlAddressRepository struct{}
@@ -27,17 +27,7 @@ func (MySqlAddressRepository) Create(tx repository.Transaction, source *models.A
 		return 0, cErr
 	}
 
-	mySqlResult := result.(sql.Result)
-	addressId, err := mySqlResult.LastInsertId()
-	if err != nil {
-		return 0, &models.CustomError{
-			Code:    http.StatusInternalServerError,
-			Message: "Failed on saving address.\n" + err.Error(),
-			Source:  err,
-		}
-	}
-
-	return addressId, nil
+	return internal.GetLastInsertedId(result.(sql.Result))
 }
 
 func (MySqlAddressRepository) Delete(repository.Transaction, int64) *models.CustomError {

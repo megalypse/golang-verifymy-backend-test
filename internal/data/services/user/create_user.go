@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"crypto/rand"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (us UserService) Create(source *models.User) (*models.User, *models.CustomError) {
+func (us UserService) Create(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
 	salt := make([]byte, 16)
 	if _, err := rand.Read(salt); err != nil {
 		return nil, &models.CustomError{
@@ -28,7 +29,7 @@ func (us UserService) Create(source *models.User) (*models.User, *models.CustomE
 		}
 	}
 
-	connection := us.userRepository.NewConnection()
+	connection := us.userRepository.NewConnection(ctx)
 	defer connection.CloseConnection()
 	tx, cErr := connection.BeginTransaction()
 	if cErr != nil {
