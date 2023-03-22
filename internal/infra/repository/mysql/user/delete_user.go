@@ -13,7 +13,7 @@ func (MySqlUserRepository) Delete(tx repository.Transaction, id int64) *models.C
 	result, err := tx.Exec(`
 	UPDATE users
 	SET deleted_at = CURRENT_TIMESTAMP
-	WHERE id = ?
+	WHERE id = ? AND deleted_at IS NULL
 	`, id)
 
 	if err != nil {

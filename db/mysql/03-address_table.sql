@@ -1,6 +1,6 @@
 CREATE TABLE addresses (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  alias VARCHAR(255)
+  alias VARCHAR(255),
   zipcode VARCHAR(255),
   street_name VARCHAR(255),
   number VARCHAR(255),

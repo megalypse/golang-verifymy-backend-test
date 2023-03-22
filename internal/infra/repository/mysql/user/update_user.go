@@ -25,7 +25,7 @@ func (MySqlUserRepository) Update(tx repository.Transaction, source *models.User
 	}
 
 	if affectedRows < 1 {
-		return customerrors.MakeNotFoundError("User not found")
+		return customerrors.MakeNotFoundError("User not found or no newer data found on received payload")
 	}
 
 	return nil

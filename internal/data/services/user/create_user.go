@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"crypto/rand"
+	"log"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
@@ -17,7 +18,6 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 	}
 
 	connection := us.userRepository.NewConnection(ctx)
-	defer connection.CloseConnection()
 
 	writeTx, err := connection.BeginTransaction()
 	if err != nil {
@@ -63,7 +63,15 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 		return nil, err
 	}
 
-	writeTx.Commit()
+	if err = readTx.Commit(); err != nil {
+		return nil, err
+	}
+
+	if err = connection.CloseConnection(); err != nil {
+		return nil, err
+	}
+
+	log.Println("User created")
 	return fullSavedUser, nil
 }
 

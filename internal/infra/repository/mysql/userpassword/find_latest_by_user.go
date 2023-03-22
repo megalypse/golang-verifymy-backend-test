@@ -1,4 +1,4 @@
-package repositorymysql
+package userpasswordrepository
 
 import (
 	"database/sql"
@@ -9,20 +9,6 @@ import (
 	internal "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/internal"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
-
-type MySqlUserPasswordRepository struct{}
-
-func (MySqlUserPasswordRepository) Create(tx repository.Transaction, source *models.UserPassword) (int64, *models.CustomError) {
-	result, cErr := tx.Exec(`
-	INSERT INTO users_passwords(password_hash, salt, user_id)
-	VALUES (?, ?, ?)
-	`, source.Password, source.Salt, source.UserId)
-	if cErr != nil {
-		return 0, cErr
-	}
-
-	return internal.GetLastInsertedId(result.(sql.Result))
-}
 
 func (MySqlUserPasswordRepository) FindLatestByUserId(tx repository.Transaction, userId int64) (*models.UserPassword, *models.CustomError) {
 	result, err := tx.Query(`

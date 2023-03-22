@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
@@ -22,8 +23,14 @@ func NewMySqlClosable(ctx context.Context, connection *sql.Conn) *MySqlClosableT
 	}
 }
 
-func (mst *MySqlClosableTransactionable) CloseConnection() {
-	mst.connection.Close()
+func (mst *MySqlClosableTransactionable) CloseConnection() *models.CustomError {
+	err := mst.connection.Close()
+
+	if err != nil {
+		return customerrors.MakeInternalServerError(err.Error(), err)
+	}
+
+	return nil
 }
 
 func (mst MySqlClosableTransactionable) BeginTransaction() (repository.Transaction, *models.CustomError) {

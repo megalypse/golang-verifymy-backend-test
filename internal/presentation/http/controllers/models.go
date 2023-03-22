@@ -8,9 +8,9 @@ type ParsedRequest[T any] struct {
 }
 
 type HttpResponse struct {
-	HttpStatus int
-	Message    string
-	Content    any
+	HttpStatus int    `json:"http_status"`
+	Message    string `json:"message"`
+	Content    any    `json:"content"`
 }
 
 type BaseController interface {

@@ -4,7 +4,7 @@ import "github.com/megalypse/golang-verifymy-backend-test/internal/domain/models
 
 type Closable interface {
 	BeginTransaction() (Transaction, *models.CustomError)
-	CloseConnection()
+	CloseConnection() *models.CustomError
 }
 
 type Transaction interface {

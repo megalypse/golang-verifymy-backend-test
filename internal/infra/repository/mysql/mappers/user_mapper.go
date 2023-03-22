@@ -1,42 +1,44 @@
 package mappers
 
 import (
-	"time"
+	"database/sql"
 
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
-type SqlPersonMapper models.User
+func UserFromRow(rows *sql.Rows) (*models.User, *models.CustomError) {
+	user := models.User{}
 
-func (pm SqlPersonMapper) ToUser() models.User {
-	return models.User(pm)
-}
+	var createdAt sql.NullTime
+	var updatedAt sql.NullTime
+	var deletedAt sql.NullTime
 
-func (pm *SqlPersonMapper) FromMap(source map[string]any) *SqlPersonMapper {
-	id := source["id"].(int64)
-	name := source["name"].(string)
-	age := source["age"].(int)
-	email := source["email"].(string)
+	err := rows.Scan(
+		&user.Id,
+		&user.Name,
+		&user.Email,
+		&user.Age,
+		&createdAt,
+		&updatedAt,
+		&deletedAt,
+	)
 
-	pm.Id = id
-	pm.Name = name
-	pm.Age = age
-	pm.Email = email
-
-	createdAt, ok := source["created_at"].(time.Time)
-	if ok {
-		pm.CreatedDate.CreatedAt = &createdAt
+	if err != nil {
+		return nil, customerrors.MakeInternalServerError(err.Error(), err)
 	}
 
-	updatedAt, ok := source["updated_at"].(time.Time)
-	if ok {
-		pm.UpdatedDate.UpdatedAt = &updatedAt
+	if createdAt.Valid {
+		user.CreatedAt = &createdAt.Time
 	}
 
-	deletedAt, ok := source["deleted_at"].(time.Time)
-	if ok {
-		pm.DeletedDate.DeletedAt = &deletedAt
+	if updatedAt.Valid {
+		user.UpdatedAt = &updatedAt.Time
 	}
 
-	return pm
+	if deletedAt.Valid {
+		user.DeletedAt = &deletedAt.Time
+	}
+
+	return &user, nil
 }

@@ -11,7 +11,7 @@ import (
 func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 	userIdParam := "userId"
 
-	request, err := internal.ParseRequest[any](r, &[]string{userIdParam})
+	request, err := internal.ParseRequest[internal.Void](r, &[]string{userIdParam})
 	if err != nil {
 		internal.WriteError(w, err)
 		return
@@ -38,7 +38,7 @@ func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 
 func (uc UserController) deleteUser(w http.ResponseWriter, r *http.Request) {
 	userIdParam := "userId"
-	request, err := internal.ParseRequest[any](r, &[]string{userIdParam})
+	request, err := internal.ParseRequest[internal.Void](r, &[]string{userIdParam})
 	if err != nil {
 		internal.WriteError(w, err)
 		return

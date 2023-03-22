@@ -1,41 +1,47 @@
 package mappers
 
 import (
-	"time"
+	"database/sql"
 
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
-type SqlAddressMapper models.Address
+func AddressFromRow(rows *sql.Rows) (*models.Address, *models.CustomError) {
+	address := models.Address{}
+	var createdAt sql.NullTime
+	var updatedAt sql.NullTime
+	var deletedAt sql.NullTime
 
-func (am *SqlAddressMapper) FromMap(source map[string]any) *SqlAddressMapper {
-	am.Id = source["id"].(int64)
-	am.AddressAlias = source["alias"].(string)
-	am.ZipCode = source["zipcode"].(string)
-	am.StreetName = source["street_name"].(string)
-	am.Number = source["number"].(string)
-	am.State = source["state"].(string)
-	am.Country = source["country"].(string)
-	am.UserId = source["user_id"].(int64)
+	err := rows.Scan(
+		&address.Id,
+		&address.AddressAlias,
+		&address.ZipCode,
+		&address.StreetName,
+		&address.Number,
+		&address.State,
+		&address.Country,
+		&address.UserId,
+		&createdAt,
+		&updatedAt,
+		&deletedAt,
+	)
 
-	createdAt, ok := source["created_at"].(time.Time)
-	if ok {
-		am.CreatedAt = &createdAt
+	if err != nil {
+		return nil, customerrors.MakeInternalServerError(err.Error(), err)
 	}
 
-	updatedAt, ok := source["updated_at"].(time.Time)
-	if ok {
-		am.UpdatedAt = &updatedAt
+	if createdAt.Valid {
+		address.CreatedAt = &createdAt.Time
 	}
 
-	deletedAt, ok := source["deleted_at"].(time.Time)
-	if ok {
-		am.DeletedAt = &deletedAt
+	if updatedAt.Valid {
+		address.UpdatedAt = &updatedAt.Time
 	}
 
-	return am
-}
+	if deletedAt.Valid {
+		address.DeletedAt = &deletedAt.Time
+	}
 
-func (am SqlAddressMapper) ToAddress() models.Address {
-	return models.Address(am)
+	return &address, nil
 }

@@ -22,7 +22,7 @@ run-compose: build
 run-compose-clean: clean build
 	docker compose up -d
 
-run-compose-clean-all: build
+run-compose-clean-all: clean clean-db build
 	docker compose down --remove-orphans
 	docker compose up -d
 

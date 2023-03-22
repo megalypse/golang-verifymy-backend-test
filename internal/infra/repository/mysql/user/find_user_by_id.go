@@ -6,28 +6,29 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	internal "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/internal"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
 
 func (MySqlUserRepository) FindById(tx repository.Transaction, id int64) (*models.User, *models.CustomError) {
 	result, err := tx.Query(`
 	SELECT * FROM users
-	WHERE id = ?
+	WHERE id = ? AND deleted_at IS NULL
 	`, id)
 	if err != nil {
 		return nil, err
 	}
 
-	rowsMap, err := internal.GetMapFromRows(result.(*sql.Rows))
+	rows := result.(*sql.Rows)
+	haveNext := rows.Next()
+
+	if !haveNext {
+		return nil, customerrors.MakeNotFoundError("User not found")
+	}
+
+	user, err := mappers.UserFromRow(rows)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(rowsMap) < 1 {
-		return nil, customerrors.MakeNotFoundError("User not found")
-	}
-
-	user := (&mappers.SqlPersonMapper{}).FromMap(rowsMap[0]).ToUser()
-	return &user, nil
+	return user, nil
 }
