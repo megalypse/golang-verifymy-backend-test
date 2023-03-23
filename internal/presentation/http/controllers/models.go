@@ -1,6 +1,8 @@
 package controllers
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type ParsedRequest[T any] struct {
 	Body   *T
@@ -18,8 +20,9 @@ type BaseController interface {
 }
 
 type RouteDefinition struct {
-	Method       string
-	Route        string
-	HandlingFunc http.HandlerFunc
-	Unprotected  bool
+	Method        string
+	Route         string
+	HandlingFunc  http.HandlerFunc
+	Unprotected   bool
+	RequiredRoles []string
 }

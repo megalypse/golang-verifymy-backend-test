@@ -1,8 +1,10 @@
 package middlewares
 
 import (
+	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/megalypse/golang-verifymy-backend-test/config"
@@ -44,11 +46,41 @@ func VerifyJwt(next http.Handler) http.Handler {
 		}
 
 		if jwtToken.Valid {
-			next.ServeHTTP(w, r)
+			claims, ok := jwtToken.Claims.(jwt.MapClaims)
+			if !ok {
+				controllers.WriteError(w, customerrors.MakeInternalServerError("Failed on getting token claims", nil))
+				return
+			}
+
+			isValid := checkTokenExpiration(claims)
+			if !isValid {
+				controllers.WriteError(w, unauthorizedError)
+				return
+			}
+
+			roles := claims["roles"].(string)
+			ctx := context.WithValue(r.Context(), "roles", roles)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			controllers.WriteError(w, unauthorizedError)
 			return
 		}
 
 	})
+}
+
+func checkTokenExpiration(claims jwt.MapClaims) bool {
+	rawExpiresAt := claims["expires_at"].(string)
+	layout := "2006-01-02T15:04:05.99999999Z"
+	expiresAt, err := time.Parse(layout, rawExpiresAt)
+	if err != nil {
+		panic(err)
+	}
+
+	if time.Now().Unix() > expiresAt.Unix() {
+		return false
+	}
+
+	return true
 }

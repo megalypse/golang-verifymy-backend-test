@@ -33,9 +33,10 @@ func (uc UserController) GetHandlers() []controllers.RouteDefinition {
 			HandlingFunc: uc.deleteUser,
 		},
 		{
-			Method:       http.MethodGet,
-			Route:        "/user/{userId}",
-			HandlingFunc: uc.findUserById,
+			Method:        http.MethodGet,
+			Route:         "/user/{userId}",
+			HandlingFunc:  uc.findUserById,
+			RequiredRoles: []string{"READ"},
 		},
 	}
 }

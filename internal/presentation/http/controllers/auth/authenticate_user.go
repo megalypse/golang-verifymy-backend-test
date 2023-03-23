@@ -28,7 +28,8 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email)
+	// TODO: add user roles down below
+	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email, []string{})
 	if err != nil {
 		controllers.WriteError(w, err)
 		return
