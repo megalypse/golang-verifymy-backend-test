@@ -10,7 +10,7 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/config"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 )
 
 func VerifyJwt(next http.Handler) http.Handler {
@@ -23,7 +23,7 @@ func VerifyJwt(next http.Handler) http.Handler {
 
 		rawToken := r.Header.Get("Authorization")
 		if rawToken == "" {
-			controllers.WriteError(w, unauthorizedError)
+			httputils.WriteError(w, unauthorizedError)
 			return
 		}
 
@@ -37,7 +37,7 @@ func VerifyJwt(next http.Handler) http.Handler {
 			return []byte(secret), nil
 		})
 		if err != nil {
-			controllers.WriteError(w, &models.CustomError{
+			httputils.WriteError(w, &models.CustomError{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
 				Source:  err,
@@ -48,13 +48,13 @@ func VerifyJwt(next http.Handler) http.Handler {
 		if jwtToken.Valid {
 			claims, ok := jwtToken.Claims.(jwt.MapClaims)
 			if !ok {
-				controllers.WriteError(w, customerrors.MakeInternalServerError("Failed on getting token claims", nil))
+				httputils.WriteError(w, customerrors.MakeInternalServerError("Failed on getting token claims", nil))
 				return
 			}
 
 			isValid := checkTokenExpiration(claims)
 			if !isValid {
-				controllers.WriteError(w, unauthorizedError)
+				httputils.WriteError(w, unauthorizedError)
 				return
 			}
 
@@ -63,7 +63,7 @@ func VerifyJwt(next http.Handler) http.Handler {
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
-			controllers.WriteError(w, unauthorizedError)
+			httputils.WriteError(w, unauthorizedError)
 			return
 		}
 

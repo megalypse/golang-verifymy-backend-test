@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 )
 
 func AuthorizationMiddleware(requiredRoles []string, next http.Handler) http.Handler {
@@ -20,7 +20,7 @@ func AuthorizationMiddleware(requiredRoles []string, next http.Handler) http.Han
 		if isAuthorized {
 			next.ServeHTTP(w, r)
 		} else {
-			controllers.WriteError(w, &models.CustomError{
+			httputils.WriteError(w, &models.CustomError{
 				Code:    http.StatusForbidden,
 				Message: http.StatusText(http.StatusForbidden),
 			})

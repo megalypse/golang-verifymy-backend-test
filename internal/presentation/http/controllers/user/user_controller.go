@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	usecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/user"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/roles"
 )
 
@@ -15,8 +15,8 @@ type UserController struct {
 	FindUserByIdUsecase usecases.FindUserById
 }
 
-func (uc UserController) GetHandlers() []controllers.RouteDefinition {
-	return []controllers.RouteDefinition{
+func (uc UserController) GetHandlers() []httputils.RouteDefinition {
+	return []httputils.RouteDefinition{
 		{
 			Method:       http.MethodPost,
 			Route:        "/user",

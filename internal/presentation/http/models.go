@@ -1,4 +1,4 @@
-package controllers
+package httputils
 
 import (
 	"net/http"
@@ -26,3 +26,5 @@ type RouteDefinition struct {
 	Unprotected   bool
 	RequiredRoles []string
 }
+
+type Void struct{}

@@ -1,4 +1,4 @@
-package controllers
+package httputils
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/internal"
 )
 
 func WriteJsonResponse(w http.ResponseWriter, response HttpResponse) {
@@ -20,7 +19,7 @@ func WriteJsonResponse(w http.ResponseWriter, response HttpResponse) {
 func ParseRequest[T any](r *http.Request, params *[]string) (*ParsedRequest[T], *models.CustomError) {
 	holder := new(T)
 
-	if reflect.TypeOf(*holder) != reflect.TypeOf(internal.Void{}) {
+	if reflect.TypeOf(*holder) != reflect.TypeOf(Void{}) {
 		if err := json.NewDecoder(r.Body).Decode(holder); err != nil {
 			return nil, &models.CustomError{
 				Code:    http.StatusInternalServerError,
