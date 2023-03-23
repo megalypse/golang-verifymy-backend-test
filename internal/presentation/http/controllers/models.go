@@ -21,4 +21,5 @@ type RouteDefinition struct {
 	Method       string
 	Route        string
 	HandlingFunc http.HandlerFunc
+	Unprotected  bool
 }

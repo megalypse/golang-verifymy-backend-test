@@ -24,6 +24,7 @@ services:
       MYSQL_DB_PORT: ${MYSQL_DB_CONTAINER_PORT}
       MYSQL_DB_NAME: ${MYSQL_DB}
       SERVER_CONTAINER_PORT: ${SERVER_CONTAINER_PORT}
+      AUTH_SECRET: ${AUTH_SECRET}
     depends_on:
       - mysql_db
     ports:

@@ -1,6 +1,7 @@
 package factory
 
 import (
+	serviceFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/service"
 	userUsecaseFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/usecase/user"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth"
@@ -21,7 +22,8 @@ func init() {
 	}
 
 	authController = auth.AuthController{
-		AuthUserUsecase: authFactory.GetUserEmailAuth(),
+		AuthUserUsecase:       authFactory.GetUserEmailAuth(),
+		AuthenticationService: serviceFactory.GetJwtAuthenticationService(),
 	}
 }
 
