@@ -34,6 +34,8 @@ func GetAffectedRows(result sql.Result) (int64, *models.CustomError) {
 }
 
 func GetMapFromRows(rows *sql.Rows) ([]map[string]any, *models.CustomError) {
+	defer rows.Close()
+
 	cols, _ := rows.Columns()
 	rawMaps := make([]map[string]any, 0)
 

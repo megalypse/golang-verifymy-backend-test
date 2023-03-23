@@ -21,7 +21,10 @@ func (MySqlUserPasswordRepository) FindLatestByUserId(tx repository.Transaction,
 		return nil, err
 	}
 
-	rows, err := internal.GetMapFromRows(result.(*sql.Rows))
+	rowsResult := result.(*sql.Rows)
+	rows, err := internal.GetMapFromRows(rowsResult)
+	defer rowsResult.Close()
+
 	if err != nil {
 		return nil, err
 	}

@@ -10,9 +10,9 @@ import (
 
 func (MySqlUserPasswordRepository) Create(tx repository.Transaction, source *models.UserPassword) (int64, *models.CustomError) {
 	result, cErr := tx.Exec(`
-	INSERT INTO users_passwords(password_hash, salt, user_id)
+	INSERT INTO users_passwords(password_hash, user_id)
 	VALUES (?, ?, ?)
-	`, source.Password, source.Salt, source.UserId)
+	`, source.Password, source.UserId)
 	if cErr != nil {
 		return 0, cErr
 	}

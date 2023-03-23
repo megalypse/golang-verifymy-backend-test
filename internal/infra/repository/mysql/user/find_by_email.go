@@ -9,11 +9,12 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
 
-func (MySqlUserRepository) FindById(tx repository.Transaction, id int64) (*models.User, *models.CustomError) {
+func (MySqlUserRepository) FindByEmail(tx repository.Transaction, email string) (*models.User, *models.CustomError) {
 	result, err := tx.Query(`
 	SELECT * FROM users
-	WHERE id = ? AND deleted_at IS NULL
-	`, id)
+	WHERE email = ? AND deleted_at IS NULL
+	LIMIT 1
+	`, email)
 	if err != nil {
 		return nil, err
 	}

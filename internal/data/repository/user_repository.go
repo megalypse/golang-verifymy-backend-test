@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"context"
-
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
@@ -11,5 +9,7 @@ type UserRepository interface {
 	Delete(Transaction, int64) *models.CustomError
 	FindById(Transaction, int64) (*models.User, *models.CustomError)
 	Update(Transaction, *models.User) *models.CustomError
-	NewConnection(context.Context) Closable
+	FindByEmail(Transaction, string) (*models.User, *models.CustomError)
+
+	baseRepository
 }

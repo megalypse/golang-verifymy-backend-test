@@ -7,4 +7,6 @@ type AddressRepository interface {
 	Delete(Transaction, int64) *models.CustomError
 	GetAllByUserId(Transaction, int64) ([]models.Address, *models.CustomError)
 	Update(Transaction, *models.Address) *models.CustomError
+
+	baseRepository
 }

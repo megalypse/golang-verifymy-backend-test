@@ -50,6 +50,11 @@ func makeMainConnection(connectionStr string) *sql.DB {
 
 	log.Println("Successfully connected to MySql database")
 
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(time.Minute * 5)
+	db.SetConnMaxIdleTime(time.Second * 5)
+
 	return db
 }
 

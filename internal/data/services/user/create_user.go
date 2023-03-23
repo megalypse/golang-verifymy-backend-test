@@ -2,22 +2,19 @@ package service
 
 import (
 	"context"
-	"crypto/rand"
-	"log"
-	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func (us UserService) Create(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
-	protectedUserPassword, err := secureUserPassword(source)
+	protectedUserPassword, err := us.securityService.SecureUserPassword(source.UserPassword)
 	if err != nil {
 		return nil, err
 	}
 
 	connection := us.userRepository.NewConnection(ctx)
+	defer connection.CloseConnection()
 
 	writeTx, err := connection.BeginTransaction()
 	if err != nil {
@@ -33,7 +30,6 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 	_, err = us.saveUserPassword(writeTx, models.UserPassword{
 		UserId:   userId,
 		Password: protectedUserPassword.Password,
-		Salt:     protectedUserPassword.Salt,
 	})
 	if err != nil {
 		writeTx.Rollback()
@@ -46,8 +42,7 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 		return nil, err
 	}
 
-	err = writeTx.Commit()
-	if err != nil {
+	if err = writeTx.Commit(); err != nil {
 		writeTx.Rollback()
 		return nil, err
 	}
@@ -67,37 +62,7 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 		return nil, err
 	}
 
-	if err = connection.CloseConnection(); err != nil {
-		return nil, err
-	}
-
-	log.Println("User created")
 	return fullSavedUser, nil
-}
-
-func secureUserPassword(source *models.User) (*models.UserPassword, *models.CustomError) {
-	salt := make([]byte, 16)
-	if _, err := rand.Read(salt); err != nil {
-		return nil, &models.CustomError{
-			Code:    http.StatusInternalServerError,
-			Message: "Failed on generating salt",
-			Source:  nil,
-		}
-	}
-	password := source.UserPassword.Password
-	protectedPassword, err := bcrypt.GenerateFromPassword(append(password, salt...), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, &models.CustomError{
-			Code:    http.StatusInternalServerError,
-			Message: "Failed on hashing password",
-			Source:  nil,
-		}
-	}
-
-	return &models.UserPassword{
-		Password: protectedPassword,
-		Salt:     salt,
-	}, nil
 }
 
 func (us UserService) getUserWithAddresses(tx repository.Transaction, userId int64) (*models.User, *models.CustomError) {

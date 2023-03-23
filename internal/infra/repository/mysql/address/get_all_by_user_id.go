@@ -17,6 +17,8 @@ func (MySqlAddressRepository) GetAllByUserId(tx repository.Transaction, userId i
 	}
 
 	rows := result.(*sql.Rows)
+	defer rows.Close()
+
 	addresses := make([]models.Address, 0)
 
 	for rows.Next() {

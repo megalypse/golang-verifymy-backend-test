@@ -90,7 +90,7 @@ func (mst *MySqlTransaction) Query(args ...any) (any, *models.CustomError) {
 		if err != nil {
 			return nil, &models.CustomError{
 				Code:    http.StatusInternalServerError,
-				Message: "Failed on executing transaction",
+				Message: err.Error(),
 				Source:  err,
 			}
 		}
@@ -99,7 +99,7 @@ func (mst *MySqlTransaction) Query(args ...any) (any, *models.CustomError) {
 	default:
 		return nil, &models.CustomError{
 			Code:    http.StatusBadRequest,
-			Message: "Invalid type for query. Must be a string",
+			Message: "Invalid type for query. First arg must be a string",
 		}
 	}
 }
@@ -115,7 +115,7 @@ func (mst *MySqlTransaction) Exec(args ...any) (any, *models.CustomError) {
 		if err != nil {
 			return nil, &models.CustomError{
 				Code:    http.StatusInternalServerError,
-				Message: "Failed on executing transaction",
+				Message: err.Error(),
 				Source:  err,
 			}
 		}
@@ -124,7 +124,7 @@ func (mst *MySqlTransaction) Exec(args ...any) (any, *models.CustomError) {
 	default:
 		return nil, &models.CustomError{
 			Code:    http.StatusBadRequest,
-			Message: "Invalid type for query. Must be a string",
+			Message: "Invalid type for query. First arg must be a string",
 		}
 	}
 }
