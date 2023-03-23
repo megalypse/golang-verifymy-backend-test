@@ -17,18 +17,10 @@ func (MySqlAddressRepository) GetAllByUserId(tx repository.Transaction, userId i
 	}
 
 	rows := result.(*sql.Rows)
-	defer rows.Close()
-
-	addresses := make([]models.Address, 0)
-
-	for rows.Next() {
-		address, err := mappers.AddressFromRow(rows)
-		if err != nil {
-			return nil, err
-		}
-
-		addresses = append(addresses, *address)
+	addressList, err := mappers.ManyAddressesFromRows(rows)
+	if err != nil {
+		return nil, err
 	}
 
-	return addresses, nil
+	return addressList, nil
 }

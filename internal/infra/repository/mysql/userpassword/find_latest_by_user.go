@@ -4,9 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	internal "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/internal"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
 
@@ -22,17 +20,10 @@ func (MySqlUserPasswordRepository) FindLatestByUserId(tx repository.Transaction,
 	}
 
 	rowsResult := result.(*sql.Rows)
-	rows, err := internal.GetMapFromRows(rowsResult)
-	defer rowsResult.Close()
-
+	password, err := mappers.GetUserPasswordFromRow(rowsResult)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(rows) < 1 {
-		return nil, customerrors.MakeNotFoundError("User not found")
-	}
-
-	password := (&mappers.SqlUserPasswordMapper{}).FromMap(rows[0]).ToUserPassword()
-	return &password, nil
+	return password, nil
 }

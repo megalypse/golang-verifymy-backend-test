@@ -8,13 +8,24 @@ import (
 )
 
 func UserFromRow(rows *sql.Rows) (*models.User, *models.CustomError) {
+	defer rows.Close()
+
+	isValid := rows.Next()
+	if !isValid {
+		return nil, customerrors.MakeNotFoundError("No users to be returned")
+	}
+
+	return extractUserFromRow(rows)
+}
+
+func extractUserFromRow(source *sql.Rows) (*models.User, *models.CustomError) {
 	user := models.User{}
 
 	var createdAt sql.NullTime
 	var updatedAt sql.NullTime
 	var deletedAt sql.NullTime
 
-	err := rows.Scan(
+	err := source.Scan(
 		&user.Id,
 		&user.Name,
 		&user.Email,

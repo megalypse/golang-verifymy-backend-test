@@ -1,27 +1,40 @@
 package mappers
 
 import (
-	"time"
+	"database/sql"
 
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
 type SqlUserPasswordMapper models.UserPassword
 
-// TODO: update mapper to use "FromRows" model
-func (pm *SqlUserPasswordMapper) FromMap(source map[string]any) *SqlUserPasswordMapper {
-	pm.Id = source["id"].(int64)
-	pm.Password = source["password_hash"].([]byte)
-	pm.UserId = source["user_id"].(int64)
+func GetUserPasswordFromRow(source *sql.Rows) (*models.UserPassword, *models.CustomError) {
+	defer source.Close()
 
-	createdAt, ok := source["created_at"].(time.Time)
-	if ok {
-		pm.CreatedAt = &createdAt
+	isValid := source.Next()
+	if !isValid {
+		return nil, customerrors.MakeNotFoundError("No user password retrieved")
 	}
 
-	return pm
+	return extractPasswordFromRow(source), nil
 }
 
-func (pm SqlUserPasswordMapper) ToUserPassword() models.UserPassword {
-	return models.UserPassword(pm)
+func extractPasswordFromRow(source *sql.Rows) *models.UserPassword {
+	password := models.UserPassword{}
+
+	var createdAt sql.NullTime
+
+	source.Scan(
+		&password.Id,
+		&password.Password,
+		&password.UserId,
+		&createdAt,
+	)
+
+	if createdAt.Valid {
+		password.CreatedAt = &createdAt.Time
+	}
+
+	return &password
 }
