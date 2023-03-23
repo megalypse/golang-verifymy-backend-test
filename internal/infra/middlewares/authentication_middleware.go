@@ -1,14 +1,16 @@
 package middlewares
 
 import (
+	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/megalypse/golang-verifymy-backend-test/config"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 )
 
 func VerifyJwt(next http.Handler) http.Handler {
@@ -21,7 +23,7 @@ func VerifyJwt(next http.Handler) http.Handler {
 
 		rawToken := r.Header.Get("Authorization")
 		if rawToken == "" {
-			controllers.WriteError(w, unauthorizedError)
+			httputils.WriteError(w, unauthorizedError)
 			return
 		}
 
@@ -35,7 +37,7 @@ func VerifyJwt(next http.Handler) http.Handler {
 			return []byte(secret), nil
 		})
 		if err != nil {
-			controllers.WriteError(w, &models.CustomError{
+			httputils.WriteError(w, &models.CustomError{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
 				Source:  err,
@@ -44,11 +46,41 @@ func VerifyJwt(next http.Handler) http.Handler {
 		}
 
 		if jwtToken.Valid {
-			next.ServeHTTP(w, r)
+			claims, ok := jwtToken.Claims.(jwt.MapClaims)
+			if !ok {
+				httputils.WriteError(w, customerrors.MakeInternalServerError("Failed on getting token claims", nil))
+				return
+			}
+
+			isValid := checkTokenExpiration(claims)
+			if !isValid {
+				httputils.WriteError(w, unauthorizedError)
+				return
+			}
+
+			roles := claims["roles"].(string)
+			ctx := context.WithValue(r.Context(), "roles", roles)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
-			controllers.WriteError(w, unauthorizedError)
+			httputils.WriteError(w, unauthorizedError)
 			return
 		}
 
 	})
+}
+
+func checkTokenExpiration(claims jwt.MapClaims) bool {
+	rawExpiresAt := claims["expires_at"].(string)
+	layout := "2006-01-02T15:04:05.99999999Z"
+	expiresAt, err := time.Parse(layout, rawExpiresAt)
+	if err != nil {
+		panic(err)
+	}
+
+	if time.Now().Unix() > expiresAt.Unix() {
+		return false
+	}
+
+	return true
 }

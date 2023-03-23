@@ -5,16 +5,17 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/services/security"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/auth"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 )
 
 type AuthController struct {
-	AuthUserUsecase       auth.AuthUser
+	AuthUserUsecase       auth.UserSignIn
 	AuthenticationService security.AuthenticationService
+	AuthorizationService  security.AuthorizationService
 }
 
-func (ac AuthController) GetHandlers() []controllers.RouteDefinition {
-	return []controllers.RouteDefinition{
+func (ac AuthController) GetHandlers() []httputils.RouteDefinition {
+	return []httputils.RouteDefinition{
 		{
 			Method:       http.MethodPost,
 			Route:        "/auth",

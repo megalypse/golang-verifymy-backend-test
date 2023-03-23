@@ -19,7 +19,7 @@ func BootControllers() {
 				if routeDefinition.Unprotected {
 					return routeDefinition.HandlingFunc
 				} else {
-					return middlewares.VerifyJwt(routeDefinition.HandlingFunc)
+					return middlewares.VerifyJwt(middlewares.AuthorizationMiddleware(routeDefinition.RequiredRoles, routeDefinition.HandlingFunc))
 				}
 			}().(http.HandlerFunc)
 			route := routeDefinition.Route

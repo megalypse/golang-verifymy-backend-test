@@ -11,7 +11,7 @@ import (
 
 type JwtAuthenticationService struct{}
 
-func (JwtAuthenticationService) GenerateJwtToken(userEmail string) (string, *models.CustomError) {
+func (JwtAuthenticationService) GenerateJwtToken(userEmail string, roles []string) (string, *models.CustomError) {
 	rawSecret := config.GetAuthSecret()
 	if rawSecret == "" {
 		panic("Auth secret not defined")
@@ -21,6 +21,7 @@ func (JwtAuthenticationService) GenerateJwtToken(userEmail string) (string, *mod
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"expires_at": time.Now().Add(time.Hour),
 		"email":      userEmail,
+		"roles":      stringifyRoles(roles),
 	})
 
 	signedToken, err := token.SignedString(secret)
@@ -29,4 +30,18 @@ func (JwtAuthenticationService) GenerateJwtToken(userEmail string) (string, *mod
 	}
 
 	return signedToken, nil
+}
+
+func stringifyRoles(roles []string) string {
+	var rolesString string
+
+	for i, v := range roles {
+		if i != 0 {
+			rolesString += ","
+		}
+
+		rolesString += v
+	}
+
+	return rolesString
 }

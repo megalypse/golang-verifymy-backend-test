@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	usecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/user"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/roles"
 )
 
 type UserController struct {
@@ -14,8 +15,8 @@ type UserController struct {
 	FindUserByIdUsecase usecases.FindUserById
 }
 
-func (uc UserController) GetHandlers() []controllers.RouteDefinition {
-	return []controllers.RouteDefinition{
+func (uc UserController) GetHandlers() []httputils.RouteDefinition {
+	return []httputils.RouteDefinition{
 		{
 			Method:       http.MethodPost,
 			Route:        "/user",
@@ -23,19 +24,22 @@ func (uc UserController) GetHandlers() []controllers.RouteDefinition {
 			Unprotected:  true,
 		},
 		{
-			Method:       http.MethodPut,
-			Route:        "/user",
-			HandlingFunc: uc.updateUser,
+			Method:        http.MethodPut,
+			Route:         "/user",
+			HandlingFunc:  uc.updateUser,
+			RequiredRoles: []string{roles.UPDATE, roles.READ},
 		},
 		{
-			Method:       http.MethodDelete,
-			Route:        "/user/{userId}",
-			HandlingFunc: uc.deleteUser,
+			Method:        http.MethodDelete,
+			Route:         "/user/{userId}",
+			HandlingFunc:  uc.deleteUser,
+			RequiredRoles: []string{roles.DELETE},
 		},
 		{
-			Method:       http.MethodGet,
-			Route:        "/user/{userId}",
-			HandlingFunc: uc.findUserById,
+			Method:        http.MethodGet,
+			Route:         "/user/{userId}",
+			HandlingFunc:  uc.findUserById,
+			RequiredRoles: []string{roles.READ},
 		},
 	}
 }

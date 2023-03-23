@@ -3,7 +3,6 @@ package repositorymysql
 import (
 	"context"
 	"database/sql"
-	"log"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
@@ -36,7 +35,6 @@ func (mst *MySqlClosableTransactionable) CloseConnection() *models.CustomError {
 func (mst MySqlClosableTransactionable) BeginTransaction() (repository.Transaction, *models.CustomError) {
 	tx, err := mst.connection.BeginTx(mst.ctx, nil)
 	if err != nil {
-		log.Println(err)
 		return nil, &models.CustomError{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

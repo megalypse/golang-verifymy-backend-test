@@ -1,17 +1,18 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 	localModels "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/models"
 )
 
 func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request) {
-	request, err := controllers.ParseRequest[localModels.AuthDto](r, nil)
+	request, err := httputils.ParseRequest[localModels.AuthDto](r, nil)
 	if err != nil {
-		controllers.WriteError(w, err)
+		httputils.WriteError(w, err)
 		return
 	}
 
@@ -22,19 +23,32 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 		},
 	}
 
-	_, err = ac.AuthUserUsecase.Auth(r.Context(), user)
+	user, err = ac.AuthUserUsecase.SignIn(r.Context(), user)
 	if err != nil {
-		controllers.WriteError(w, err)
+		httputils.WriteError(w, err)
 		return
 	}
 
-	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email)
+	roles, err := ac.AuthorizationService.GetUserRoles(r.Context(), user.Id)
 	if err != nil {
-		controllers.WriteError(w, err)
+		httputils.WriteError(w, err)
 		return
 	}
 
-	controllers.WriteJsonResponse(w, controllers.HttpResponse{
+	userRoles := make([]string, 0, len(roles))
+	for _, v := range roles {
+		userRoles = append(userRoles, v.Alias)
+	}
+
+	log.Println(userRoles)
+
+	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email, userRoles)
+	if err != nil {
+		httputils.WriteError(w, err)
+		return
+	}
+
+	httputils.WriteJsonResponse(w, httputils.HttpResponse{
 		HttpStatus: 200,
 		Message:    "User successfully authenticated",
 		Content:    token,

@@ -24,8 +24,6 @@ func init() {
 	mysqlDbName = os.Getenv("MYSQL_DB_NAME")
 	mysqlDbHost = os.Getenv("MYSQL_DB_HOST")
 
-	log.Println("AAAAAAAAAAn")
-
 	connectionString := fmt.Sprintf("root:%s@tcp(%s:%s)/%s?parseTime=true", mysqlPassword, mysqlDbHost, mysqlPort, mysqlDbName)
 	mainConnection = makeMainConnection(connectionString)
 }
