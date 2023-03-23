@@ -4,5 +4,5 @@ type Role struct {
 	Identity
 	CreatedDate
 
-	Alias string `json:"alias"`
+	Alias string `json:"alias" db:"alias"`
 }

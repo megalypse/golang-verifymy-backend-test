@@ -24,6 +24,7 @@ func init() {
 	authController = auth.AuthController{
 		AuthUserUsecase:       authFactory.GetUserEmailAuth(),
 		AuthenticationService: serviceFactory.GetJwtAuthenticationService(),
+		AuthorizationService:  serviceFactory.GetRolesAuthorizationService(),
 	}
 }
 

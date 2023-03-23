@@ -8,9 +8,10 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
 )
 
-func AuthorizationMiddleware(userRoles string, requiredRoles []string, next http.Handler) http.Handler {
+func AuthorizationMiddleware(requiredRoles []string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isAuthorized := true
+		userRoles := r.Context().Value("roles").(string)
 
 		for _, role := range requiredRoles {
 			isAuthorized = isAuthorized && strings.Contains(userRoles, role)

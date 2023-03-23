@@ -5,6 +5,7 @@ import (
 
 	usecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/user"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/roles"
 )
 
 type UserController struct {
@@ -23,20 +24,22 @@ func (uc UserController) GetHandlers() []controllers.RouteDefinition {
 			Unprotected:  true,
 		},
 		{
-			Method:       http.MethodPut,
-			Route:        "/user",
-			HandlingFunc: uc.updateUser,
+			Method:        http.MethodPut,
+			Route:         "/user",
+			HandlingFunc:  uc.updateUser,
+			RequiredRoles: []string{roles.UPDATE, roles.READ},
 		},
 		{
-			Method:       http.MethodDelete,
-			Route:        "/user/{userId}",
-			HandlingFunc: uc.deleteUser,
+			Method:        http.MethodDelete,
+			Route:         "/user/{userId}",
+			HandlingFunc:  uc.deleteUser,
+			RequiredRoles: []string{roles.DELETE},
 		},
 		{
 			Method:        http.MethodGet,
 			Route:         "/user/{userId}",
 			HandlingFunc:  uc.findUserById,
-			RequiredRoles: []string{"READ"},
+			RequiredRoles: []string{roles.READ},
 		},
 	}
 }

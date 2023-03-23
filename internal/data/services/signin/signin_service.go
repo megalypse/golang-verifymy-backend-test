@@ -8,7 +8,7 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
-type UserEmailAuth struct {
+type EmailSignInService struct {
 	userPasswordRepository repository.UserPasswordRepository
 	userRepository         repository.UserRepository
 	securityService        security.SecurityService
@@ -18,33 +18,33 @@ func NewUserEmailAuth(
 	userPasswordRepository repository.UserPasswordRepository,
 	userRepository repository.UserRepository,
 	securityService security.SecurityService,
-) *UserEmailAuth {
-	return &UserEmailAuth{
+) *EmailSignInService {
+	return &EmailSignInService{
 		userPasswordRepository: userPasswordRepository,
 		userRepository:         userRepository,
 		securityService:        securityService,
 	}
 }
 
-func (ua UserEmailAuth) Auth(ctx context.Context, source *models.User) (bool, *models.CustomError) {
+func (ua EmailSignInService) SignIn(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
 	conn := ua.userRepository.NewConnection(ctx)
 	defer conn.CloseConnection()
 
 	tx, err := conn.BeginTransaction()
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	user, err := ua.userRepository.FindByEmail(tx, source.Email)
 	if err != nil {
 		tx.Rollback()
-		return false, err
+		return nil, err
 	}
 
 	storedPassword, err := ua.userPasswordRepository.FindLatestByUserId(tx, user.Id)
 	if err != nil {
 		tx.Rollback()
-		return false, err
+		return nil, err
 	}
 	tx.Commit()
 
@@ -52,8 +52,8 @@ func (ua UserEmailAuth) Auth(ctx context.Context, source *models.User) (bool, *m
 	if err != nil {
 		tx.Commit()
 		conn.CloseConnection()
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return user, nil
 }

@@ -2,7 +2,6 @@ package addressrepository
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
@@ -10,7 +9,6 @@ import (
 )
 
 func (MySqlAddressRepository) GetAllByUserId(tx repository.Transaction, userId int64) ([]models.Address, *models.CustomError) {
-	log.Println("A")
 	result, err := tx.Query(`SELECT * FROM addresses WHERE user_id = ?`, userId)
 	if err != nil {
 		return nil, err

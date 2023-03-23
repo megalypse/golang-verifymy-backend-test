@@ -9,8 +9,9 @@ import (
 )
 
 type AuthController struct {
-	AuthUserUsecase       auth.AuthUser
+	AuthUserUsecase       auth.UserSignIn
 	AuthenticationService security.AuthenticationService
+	AuthorizationService  security.AuthorizationService
 }
 
 func (ac AuthController) GetHandlers() []controllers.RouteDefinition {

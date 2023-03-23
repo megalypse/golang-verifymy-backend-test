@@ -12,6 +12,29 @@ type RolesAuthorizationService struct {
 	UserRolesRepository repository.UserRolesRepository
 }
 
+func (as RolesAuthorizationService) GetUserRoles(ctx context.Context, userId int64) ([]models.Role, *models.CustomError) {
+	conn := as.RolesRepository.NewConnection(ctx)
+	defer conn.CloseConnection()
+
+	tx, err := conn.BeginTransaction()
+	if err != nil {
+		return nil, err
+	}
+
+	roles, err := as.UserRolesRepository.GetAllByUserId(tx, userId)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	return roles, nil
+}
+
 func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64, roleAlias string) *models.CustomError {
 	conn := as.RolesRepository.NewConnection(ctx)
 	defer conn.CloseConnection()

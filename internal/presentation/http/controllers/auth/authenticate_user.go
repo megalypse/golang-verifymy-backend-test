@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
@@ -22,14 +23,26 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 		},
 	}
 
-	_, err = ac.AuthUserUsecase.Auth(r.Context(), user)
+	user, err = ac.AuthUserUsecase.SignIn(r.Context(), user)
 	if err != nil {
 		controllers.WriteError(w, err)
 		return
 	}
 
-	// TODO: add user roles down below
-	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email, []string{})
+	roles, err := ac.AuthorizationService.GetUserRoles(r.Context(), user.Id)
+	if err != nil {
+		controllers.WriteError(w, err)
+		return
+	}
+
+	userRoles := make([]string, 0, len(roles))
+	for _, v := range roles {
+		userRoles = append(userRoles, v.Alias)
+	}
+
+	log.Println(userRoles)
+
+	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email, userRoles)
 	if err != nil {
 		controllers.WriteError(w, err)
 		return

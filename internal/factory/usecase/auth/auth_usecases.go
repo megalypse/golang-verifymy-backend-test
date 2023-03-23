@@ -1,22 +1,22 @@
 package auth
 
 import (
-	"github.com/megalypse/golang-verifymy-backend-test/internal/data/services/auth"
+	signin "github.com/megalypse/golang-verifymy-backend-test/internal/data/services/signin"
 	authUsecases "github.com/megalypse/golang-verifymy-backend-test/internal/domain/usecases/auth"
 	repositoryFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/factory/service"
 )
 
-var authUserUsecase authUsecases.AuthUser
+var authUserUsecase authUsecases.UserSignIn
 
 func init() {
-	authUserUsecase = auth.NewUserEmailAuth(
+	authUserUsecase = signin.NewUserEmailAuth(
 		repositoryFactory.GetMySqlUserPasswordRepository(),
 		repositoryFactory.GetUserRepository(),
 		service.GetBCryptSecurityService(),
 	)
 }
 
-func GetUserEmailAuth() authUsecases.AuthUser {
+func GetUserEmailAuth() authUsecases.UserSignIn {
 	return authUserUsecase
 }
