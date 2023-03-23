@@ -17,7 +17,7 @@ func (MySqlAddressRepository) GetAllByUserId(tx repository.Transaction, userId i
 	}
 
 	rows := result.(*sql.Rows)
-	addressList, err := mappers.ManyAddressesFromRows(rows)
+	addressList, err := mappers.MapMany(mappers.AddressMapperFunc, rows)
 	if err != nil {
 		return nil, err
 	}

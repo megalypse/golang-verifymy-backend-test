@@ -18,7 +18,7 @@ func (MySqlUserRepository) FindById(tx repository.Transaction, id int64) (*model
 	}
 
 	rows := result.(*sql.Rows)
-	user, err := mappers.UserFromRow(rows)
+	user, err := mappers.MapOne(mappers.UserMapperFunc, rows)
 	if err != nil {
 		return nil, err
 	}

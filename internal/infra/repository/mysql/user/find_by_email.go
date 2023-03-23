@@ -19,7 +19,7 @@ func (MySqlUserRepository) FindByEmail(tx repository.Transaction, email string) 
 	}
 
 	rows := result.(*sql.Rows)
-	user, err := mappers.UserFromRow(rows)
+	user, err := mappers.MapOne(mappers.UserMapperFunc, rows)
 	if err != nil {
 		return nil, err
 	}

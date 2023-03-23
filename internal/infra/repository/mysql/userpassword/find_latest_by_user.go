@@ -20,7 +20,7 @@ func (MySqlUserPasswordRepository) FindLatestByUserId(tx repository.Transaction,
 	}
 
 	rowsResult := result.(*sql.Rows)
-	password, err := mappers.GetUserPasswordFromRow(rowsResult)
+	password, err := mappers.MapOne(mappers.UserPasswordMapperFunc, rowsResult)
 	if err != nil {
 		return nil, err
 	}

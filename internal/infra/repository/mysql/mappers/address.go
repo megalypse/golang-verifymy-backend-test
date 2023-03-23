@@ -7,36 +7,7 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
-func AddressFromRow(rows *sql.Rows) (*models.Address, *models.CustomError) {
-	defer rows.Close()
-
-	isValid := rows.Next()
-
-	if !isValid {
-		return nil, customerrors.MakeNotFoundError("No address to be returned")
-	}
-
-	return addressFromRow(rows)
-}
-
-func ManyAddressesFromRows(rows *sql.Rows) ([]models.Address, *models.CustomError) {
-	defer rows.Close()
-
-	addressList := []models.Address{}
-
-	for rows.Next() {
-		address, err := addressFromRow(rows)
-		if err != nil {
-			return addressList, err
-		}
-
-		addressList = append(addressList, *address)
-	}
-
-	return addressList, nil
-}
-
-func addressFromRow(source *sql.Rows) (*models.Address, *models.CustomError) {
+func AddressMapperFunc(source *sql.Rows) (*models.Address, *models.CustomError) {
 	address := models.Address{}
 	var createdAt sql.NullTime
 	var updatedAt sql.NullTime
