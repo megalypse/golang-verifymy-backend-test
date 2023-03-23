@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	controllerFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/controller"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/middlewares"
 )
 
 func BootControllers() {
@@ -14,7 +15,13 @@ func BootControllers() {
 
 	for _, controller := range controllers {
 		for _, routeDefinition := range controller.GetHandlers() {
-			handlingFunc := routeDefinition.HandlingFunc
+			handlingFunc := func() http.Handler {
+				if routeDefinition.Unprotected {
+					return routeDefinition.HandlingFunc
+				} else {
+					return middlewares.VerifyJwt(routeDefinition.HandlingFunc)
+				}
+			}().(http.HandlerFunc)
 			route := routeDefinition.Route
 
 			switch routeDefinition.Method {

@@ -20,6 +20,7 @@ func (uc UserController) GetHandlers() []controllers.RouteDefinition {
 			Method:       http.MethodPost,
 			Route:        "/user",
 			HandlingFunc: uc.createUser,
+			Unprotected:  true,
 		},
 		{
 			Method:       http.MethodPut,

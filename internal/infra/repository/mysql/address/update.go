@@ -29,7 +29,7 @@ func (MySqlAddressRepository) Update(tx repository.Transaction, source *models.A
 	}
 
 	if rows > 1 {
-		return customerrors.MakeConflictError("More than one row affected")
+		return customerrors.MakeConflictError("More than one row affected", nil)
 	}
 
 	return nil

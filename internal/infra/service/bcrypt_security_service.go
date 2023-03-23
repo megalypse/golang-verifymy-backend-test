@@ -1,7 +1,6 @@
 package service
 
 import (
-	"crypto/rand"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
@@ -10,17 +9,8 @@ import (
 
 type BCryptSecurityService struct{}
 
-func (BCryptSecurityService) SecureUserPassword(source models.UserPassword) (*models.UserPassword, *models.CustomError) {
-	salt := make([]byte, 16)
-	if _, err := rand.Read(salt); err != nil {
-		return nil, &models.CustomError{
-			Code:    http.StatusInternalServerError,
-			Message: "Failed on generating salt",
-			Source:  nil,
-		}
-	}
-	password := source.Password
-	protectedPassword, err := bcrypt.GenerateFromPassword(append(password, salt...), bcrypt.DefaultCost)
+func (BCryptSecurityService) SecureUserPassword(source *models.UserPassword) (*models.UserPassword, *models.CustomError) {
+	protectedPassword, err := hashPassword(source.Password)
 	if err != nil {
 		return nil, &models.CustomError{
 			Code:    http.StatusInternalServerError,
@@ -31,6 +21,30 @@ func (BCryptSecurityService) SecureUserPassword(source models.UserPassword) (*mo
 
 	return &models.UserPassword{
 		Password: protectedPassword,
-		Salt:     salt,
 	}, nil
+}
+
+func (BCryptSecurityService) Compare(hashedPassword []byte, plainpassword []byte) *models.CustomError {
+	err := bcrypt.CompareHashAndPassword(hashedPassword, plainpassword)
+	if err != nil {
+		return &models.CustomError{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+			Source:  err,
+		}
+	}
+
+	return nil
+}
+
+func hashPassword(plainPassword []byte) ([]byte, *models.CustomError) {
+	hashedPassword, err := bcrypt.GenerateFromPassword(plainPassword, bcrypt.DefaultCost)
+	if err != nil {
+		return nil, &models.CustomError{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+	}
+
+	return hashedPassword, nil
 }

@@ -1,4 +1,4 @@
-package internal
+package controllers
 
 import (
 	"encoding/json"
@@ -8,19 +8,19 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/internal"
 )
 
-func WriteJsonResponse(w http.ResponseWriter, response controllers.HttpResponse) {
+func WriteJsonResponse(w http.ResponseWriter, response HttpResponse) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(response.HttpStatus)
 	json.NewEncoder(w).Encode(response)
 }
 
-func ParseRequest[T any](r *http.Request, params *[]string) (*controllers.ParsedRequest[T], *models.CustomError) {
+func ParseRequest[T any](r *http.Request, params *[]string) (*ParsedRequest[T], *models.CustomError) {
 	holder := new(T)
 
-	if reflect.TypeOf(*holder) != reflect.TypeOf(Void{}) {
+	if reflect.TypeOf(*holder) != reflect.TypeOf(internal.Void{}) {
 		if err := json.NewDecoder(r.Body).Decode(holder); err != nil {
 			return nil, &models.CustomError{
 				Code:    http.StatusInternalServerError,
@@ -37,7 +37,7 @@ func ParseRequest[T any](r *http.Request, params *[]string) (*controllers.Parsed
 		}
 	}
 
-	httpRequest := controllers.ParsedRequest[T]{
+	httpRequest := ParsedRequest[T]{
 		Body:   holder,
 		Params: paramMap,
 	}

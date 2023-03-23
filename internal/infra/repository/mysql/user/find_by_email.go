@@ -1,4 +1,4 @@
-package userpasswordrepository
+package userrepository
 
 import (
 	"database/sql"
@@ -8,22 +8,21 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
 
-func (MySqlUserPasswordRepository) FindLatestByUserId(tx repository.Transaction, userId int64) (*models.UserPassword, *models.CustomError) {
+func (MySqlUserRepository) FindByEmail(tx repository.Transaction, email string) (*models.User, *models.CustomError) {
 	result, err := tx.Query(`
-	SELECT * FROM users_passwords
-	WHERE user_id = ?
-	ORDER BY created_at DESC
+	SELECT * FROM users
+	WHERE email = ? AND deleted_at IS NULL
 	LIMIT 1
-	`, userId)
+	`, email)
 	if err != nil {
 		return nil, err
 	}
 
-	rowsResult := result.(*sql.Rows)
-	password, err := mappers.GetUserPasswordFromRow(rowsResult)
+	rows := result.(*sql.Rows)
+	user, err := mappers.UserFromRow(rows)
 	if err != nil {
 		return nil, err
 	}
 
-	return password, nil
+	return user, nil
 }
