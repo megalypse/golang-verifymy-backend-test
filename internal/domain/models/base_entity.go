@@ -10,7 +10,7 @@ type BaseEntity struct {
 }
 
 type Identity struct {
-	Id int64 `json:"id" db:"id"`
+	Id int64 `json:"id" db:"id" example:"1"`
 }
 
 type CreatedDate struct {

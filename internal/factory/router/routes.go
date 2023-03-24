@@ -12,6 +12,21 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+//	@title			Server Documentation
+//	@version		1.0
+//	@description	Simple user crud API documentation
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.email	devalliguieri@gmail.com
+
+//	@host		localhost:3001
+//	@BasePath	/
+
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
+// @description				Description for what is this security definition being used
 func BootControllers() {
 	router := GetRouter()
 

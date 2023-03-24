@@ -13,6 +13,7 @@ import (
 // @Failure 500 {object} models.CustomError "Internal Server Error"
 // @Param userId path int true "Person ID"
 // @Router /user/{userId} [get]
+// @Security ApiKeyAuth
 func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 	userIdParam := "userId"
 

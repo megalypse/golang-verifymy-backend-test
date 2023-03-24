@@ -6,11 +6,17 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
-	localModels "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/models"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/dto"
 )
 
+// @Summary Authenticate user with email and password
+// @Tags Auth
+// @Success 201 {object} httputils.HttpResponse
+// @Failure 500 {object} models.CustomError "Internal Server Error"
+// @Param request body dto.AuthDto true "Authenticates user and return a new JWT token"
+// @Router /auth [post]
 func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request) {
-	request, err := httputils.ParseRequest[localModels.AuthDto](r, nil)
+	request, err := httputils.ParseRequest[dto.AuthDto](r, nil)
 	if err != nil {
 		httputils.WriteError(w, err)
 		return
@@ -19,7 +25,7 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 	user := &models.User{
 		Email: request.Body.Email,
 		UserPassword: &models.UserPassword{
-			Password: request.Body.Password,
+			Password: []byte(request.Body.Password),
 		},
 	}
 
