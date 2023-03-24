@@ -3,7 +3,9 @@ package repository
 import (
 	"database/sql"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/customerrors"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
@@ -28,12 +30,21 @@ func (MySqlUserRolesRepository) GetAllByUserId(tx repository.Transaction, userid
 
 func (ur MySqlUserRolesRepository) AssignRole(tx repository.Transaction, userId, roleId int64) *models.CustomError {
 	_, err := tx.Exec(`
-	INSERT INTO users_roles (user_id, role_id)
+	INSERT INTO user_roles (user_id, role_id)
 	VALUES (?, ?);
 	`, userId, roleId)
 
 	if err != nil {
-		return err
+		sqlErr := err.Source.(*mysql.MySQLError)
+
+		switch sqlErr.Number {
+		case 1062:
+			return customerrors.MakeConflictError("Role already granted", err)
+		case 1452:
+			return customerrors.MakeNotFoundError("Not found")
+		default:
+			return err
+		}
 	}
 
 	return nil

@@ -37,7 +37,7 @@ func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httputils.WriteJsonResponse(w, httputils.HttpResponse[models.User]{
-		HttpStatus: http.StatusFound,
+		HttpStatus: http.StatusOK,
 		Message:    "User successfully fetched",
 		Content:    *user,
 	})

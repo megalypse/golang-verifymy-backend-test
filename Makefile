@@ -26,9 +26,11 @@ run:
 	docker compose up server -d
 
 run-tests:
-	docker compose up t_server -d
+	docker compose up t_server
 
-run-clean: clean-db clean down run
+run-clean: clean run
+
+run-clean-all: clean-db clean down run
 
 run-tests-clean: clean-tests clean-test-db down run-tests
 

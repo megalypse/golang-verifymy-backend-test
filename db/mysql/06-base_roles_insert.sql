@@ -1,7 +1,7 @@
-INSERT INTO roles (alias)
+INSERT INTO roles (id, alias)
 VALUES
-  ("CREATE"),
-  ("READ"),
-  ("UPDATE"),
-  ("DELETE");
+  (1, "CREATE"),
+  (2, "READ"),
+  (3, "UPDATE"),
+  (4, "DELETE");
 

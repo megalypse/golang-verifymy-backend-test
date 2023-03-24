@@ -6,7 +6,7 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/dto"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/dto"
 )
 
 // @Summary Authenticate user with email and password

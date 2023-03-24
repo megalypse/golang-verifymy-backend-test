@@ -6,7 +6,7 @@ import (
 	_ "github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/dto"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/dto"
 )
 
 // @Summary Authorize an user with the received role
@@ -22,7 +22,7 @@ func (ac AuthController) authorizeUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = ac.AuthorizationService.AssignRole(r.Context(), request.Body.UserId, request.Body.UserId); err != nil {
+	if err = ac.AuthorizationService.AssignRole(r.Context(), request.Body.UserId, request.Body.RoleId); err != nil {
 		httputils.WriteError(w, err)
 		return
 	}

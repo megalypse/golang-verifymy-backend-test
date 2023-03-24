@@ -27,6 +27,16 @@ func (us UserService) findById(ctx context.Context, conn repository.Closable, id
 		return nil, err
 	}
 
-	tx.Commit()
+	addressList, err := us.addressRepository.GetAllByUserId(tx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	result.AddressList = addressList
+
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 	return result, nil
 }

@@ -33,8 +33,8 @@ func (uc UserController) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputils.WriteJsonResponse(w, httputils.HttpResponse[httputils.Void]{
-		HttpStatus: http.StatusNoContent,
+	httputils.WriteJsonResponse(w, httputils.HttpResponse[any]{
+		HttpStatus: http.StatusOK,
 		Message:    "User successfully deleted",
 	})
 }
