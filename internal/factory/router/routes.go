@@ -1,11 +1,15 @@
 package factory
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/megalypse/golang-verifymy-backend-test/config"
+	_ "github.com/megalypse/golang-verifymy-backend-test/docs"
 	controllerFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/controller"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/middlewares"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func BootControllers() {
@@ -41,4 +45,14 @@ func BootControllers() {
 		}
 	}
 
+	bootSwagger(router)
+}
+
+func bootSwagger(router CustomHttpHandler) {
+	rawPort := config.GetServerHostPort()
+	swaggerUrl := fmt.Sprintf("http://localhost:%s/swagger/doc.json", rawPort)
+
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(swaggerUrl),
+	))
 }

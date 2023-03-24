@@ -3,9 +3,16 @@ package usercontroller
 import (
 	"net/http"
 
+	_ "github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 )
 
+// @Summary Finds an user by id
+// @Tags Users
+// @Success 200 {object} models.User
+// @Failure 500 {object} models.CustomError "Internal Server Error"
+// @Param userId path int true "Person ID"
+// @Router /user/{userId} [get]
 func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 	userIdParam := "userId"
 
