@@ -36,13 +36,18 @@ func makeMainConnection(connectionStr string) *sql.DB {
 
 	const healthcheckAmt int = 5
 	for i := 0; i < healthcheckAmt; i++ {
+		log.Println("Trying to connect to " + connectionStr)
 		err = db.Ping()
 		if err == nil {
 			break
-		} else if err != nil && i < healthcheckAmt {
-			log.Printf("Failed connecting to database (%d/%d)", i+1, healthcheckAmt)
-		} else {
+		}
+
+		if i == healthcheckAmt-1 {
 			panic(err.Error())
+		}
+
+		if i < healthcheckAmt {
+			log.Printf("Failed connecting to database (%d/%d)", i+1, healthcheckAmt)
 		}
 
 		time.Sleep(time.Second * 5)

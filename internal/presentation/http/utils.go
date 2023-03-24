@@ -10,7 +10,7 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 )
 
-func WriteJsonResponse(w http.ResponseWriter, response HttpResponse) {
+func WriteJsonResponse[T any](w http.ResponseWriter, response HttpResponse[T]) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(response.HttpStatus)
 	json.NewEncoder(w).Encode(response)
@@ -51,7 +51,10 @@ func GetUrlParam(r *http.Request, key string) string {
 func WriteError(w http.ResponseWriter, customError *models.CustomError) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(customError.Code)
-	json.NewEncoder(w).Encode(customError)
+	json.NewEncoder(w).Encode(HttpResponse[string]{
+		HttpStatus: customError.Code,
+		Message:    customError.Message,
+	})
 }
 
 func ParseId(source string) (int64, *models.CustomError) {

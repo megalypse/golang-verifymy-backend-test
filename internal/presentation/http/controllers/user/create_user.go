@@ -3,6 +3,7 @@ package usercontroller
 import (
 	"net/http"
 
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	_ "github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/dto"
@@ -15,7 +16,7 @@ import (
 // @Failure 500 {object} models.CustomError "Internal Server Error"
 // @Param request body dto.CreateUserDto true "Create user request"
 // @Router /user [post]
-func (uc UserController) createUser(w http.ResponseWriter, r *http.Request) {
+func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	customRequest, err := httputils.ParseRequest[dto.CreateUserDto](r, nil)
 	if err != nil {
 		httputils.WriteError(w, err)
@@ -28,9 +29,9 @@ func (uc UserController) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputils.WriteJsonResponse(w, httputils.HttpResponse{
+	httputils.WriteJsonResponse(w, httputils.HttpResponse[models.User]{
 		HttpStatus: http.StatusOK,
 		Message:    "User created successfully",
-		Content:    createdUser,
+		Content:    *createdUser,
 	})
 }

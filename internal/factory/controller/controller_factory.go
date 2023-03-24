@@ -34,3 +34,7 @@ func GetControllers() []httputils.BaseController {
 		authController,
 	}
 }
+
+func GetUserController() httputils.BaseController {
+	return userController
+}

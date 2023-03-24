@@ -31,7 +31,10 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 
 	user, err = ac.AuthUserUsecase.SignIn(r.Context(), user)
 	if err != nil {
-		httputils.WriteError(w, err)
+		httputils.WriteError(w, &models.CustomError{
+			Code:    http.StatusUnauthorized,
+			Message: "Authentication failed",
+		})
 		return
 	}
 
@@ -54,7 +57,7 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	httputils.WriteJsonResponse(w, httputils.HttpResponse{
+	httputils.WriteJsonResponse(w, httputils.HttpResponse[string]{
 		HttpStatus: 200,
 		Message:    "User successfully authenticated",
 		Content:    token,
