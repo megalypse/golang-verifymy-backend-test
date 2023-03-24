@@ -1,6 +1,3 @@
-build:
-	GOARCH=amd64 GOOS=linux go build -o ./bin/server ./cmd/server/main.go
-
 IMAGE_ID := ${shell docker images 'verifymy_backend_test_golang_server' -a -q}
 clean:
 	docker compose stop server
@@ -11,18 +8,13 @@ clean-db:
 	docker compose down
 	docker rmi ${DB_IMAGE_ID} -f
 
-DOC_DEPS_PATH=./internal/domain/models
-SWAGGER_ENTRYPOINT=./internal/main/factory/router_factory.go
-generate-docs-silent:
-	swag init -g ${SWAGGER_ENTRYPOINT} --pd --quiet
-
-run-compose: build
+run-compose:
 	docker compose up -d
 
-run-compose-clean: clean build
+run-compose-clean: clean
 	docker compose up -d
 
-run-compose-clean-all: clean clean-db build
+run-compose-clean-all: clean clean-db
 	docker compose down --remove-orphans
 	docker compose up -d
 

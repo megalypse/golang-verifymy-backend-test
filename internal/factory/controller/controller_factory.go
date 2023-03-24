@@ -3,15 +3,15 @@ package factory
 import (
 	serviceFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/service"
 	userUsecaseFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/usecase/user"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers"
+	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth"
 	usercontroller "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/user"
 
 	authFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/usecase/auth"
 )
 
-var userController controllers.BaseController
-var authController controllers.BaseController
+var userController httputils.BaseController
+var authController httputils.BaseController
 
 func init() {
 	userController = usercontroller.UserController{
@@ -28,8 +28,8 @@ func init() {
 	}
 }
 
-func GetControllers() []controllers.BaseController {
-	return []controllers.BaseController{
+func GetControllers() []httputils.BaseController {
+	return []httputils.BaseController{
 		userController,
 		authController,
 	}

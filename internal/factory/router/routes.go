@@ -1,13 +1,32 @@
 package factory
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/megalypse/golang-verifymy-backend-test/config"
+	_ "github.com/megalypse/golang-verifymy-backend-test/docs"
 	controllerFactory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/controller"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/middlewares"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+//	@title			Server Documentation
+//	@version		1.0
+//	@description	Simple user crud API documentation
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.email	devalliguieri@gmail.com
+
+//	@host		localhost:3001
+//	@BasePath	/
+
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
+// @description				Description for what is this security definition being used
 func BootControllers() {
 	router := GetRouter()
 
@@ -41,4 +60,14 @@ func BootControllers() {
 		}
 	}
 
+	bootSwagger(router)
+}
+
+func bootSwagger(router CustomHttpHandler) {
+	rawPort := config.GetServerHostPort()
+	swaggerUrl := fmt.Sprintf("http://localhost:%s/swagger/doc.json", rawPort)
+
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(swaggerUrl),
+	))
 }

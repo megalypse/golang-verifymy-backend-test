@@ -1,14 +1,14 @@
 package models
 
 type Address struct {
-	AddressAlias string `json:"alias" db:"address_alias"`
-	ZipCode      string `json:"zipcode" db:"zip_code"`
-	StreetName   string `json:"street_name" db:"street_name"`
-	Number       string `json:"number" db:"number"`
-	State        string `json:"state" db:"state"`
-	Country      string `json:"country" db:"country"`
+	AddressAlias string `db:"address_alias"`
+	ZipCode      string `db:"zip_code"`
+	StreetName   string `db:"street_name"`
+	Number       string `db:"number"`
+	State        string `db:"state"`
+	Country      string `db:"country"`
 
-	UserId int64 `json:"user_id" db:"user_id"`
+	UserId int64 `json:"user_id" db:"user_id" example:"1"`
 
 	BaseEntity
 }
