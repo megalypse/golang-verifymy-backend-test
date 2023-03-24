@@ -5,6 +5,7 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+	factory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 )
 
 func (us UserService) Create(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
@@ -13,7 +14,7 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 		return nil, err
 	}
 
-	connection := us.userRepository.NewConnection(ctx)
+	connection := factory.NewSqlConnection(ctx)
 	defer connection.CloseConnection()
 
 	writeTx, err := connection.BeginTransaction()

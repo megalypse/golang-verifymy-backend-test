@@ -5,10 +5,11 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+	factory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 )
 
 func (us UserService) FindById(ctx context.Context, id int64) (*models.User, *models.CustomError) {
-	connection := us.userRepository.NewConnection(ctx)
+	connection := factory.NewSqlConnection(ctx)
 	defer connection.CloseConnection()
 
 	return us.findById(ctx, connection, id)

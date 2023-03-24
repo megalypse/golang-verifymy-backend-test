@@ -6,6 +6,7 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/services/security"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+	factory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 )
 
 type EmailSignInService struct {
@@ -27,7 +28,7 @@ func NewUserEmailAuth(
 }
 
 func (ua EmailSignInService) SignIn(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
-	conn := ua.userRepository.NewConnection(ctx)
+	conn := factory.NewSqlConnection(ctx)
 	defer conn.CloseConnection()
 
 	tx, err := conn.BeginTransaction()

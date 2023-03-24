@@ -10,6 +10,4 @@ type UserRepository interface {
 	FindById(Transaction, int64) (*models.User, *models.CustomError)
 	Update(Transaction, *models.User) *models.CustomError
 	FindByEmail(Transaction, string) (*models.User, *models.CustomError)
-
-	baseRepository
 }
