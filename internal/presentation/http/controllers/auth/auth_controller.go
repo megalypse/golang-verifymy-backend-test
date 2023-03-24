@@ -22,5 +22,10 @@ func (ac AuthController) GetHandlers() []httputils.RouteDefinition {
 			HandlingFunc: ac.authenticateUser,
 			Unprotected:  true,
 		},
+		{
+			Method:       http.MethodPost,
+			Route:        "/auth/authorize",
+			HandlingFunc: ac.authorizeUser,
+		},
 	}
 }

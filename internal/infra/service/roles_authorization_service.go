@@ -36,7 +36,7 @@ func (as RolesAuthorizationService) GetUserRoles(ctx context.Context, userId int
 	return roles, nil
 }
 
-func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64, roleAlias string) *models.CustomError {
+func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64, roleId int64) *models.CustomError {
 	conn := factory.NewSqlConnection(ctx)
 	defer conn.CloseConnection()
 
@@ -45,7 +45,7 @@ func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64
 		return err
 	}
 
-	role, err := as.RolesRepository.FindByAlias(tx, roleAlias)
+	role, err := as.RolesRepository.FindById(tx, roleId)
 	if err != nil {
 		tx.Rollback()
 		return err

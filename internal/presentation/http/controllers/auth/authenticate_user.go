@@ -11,7 +11,7 @@ import (
 
 // @Summary Authenticate user with email and password
 // @Tags Auth
-// @Success 201 {object} httputils.HttpResponse
+// @Success 201 {object} httputils.HttpResponse[string]
 // @Failure 500 {object} models.CustomError "Internal Server Error"
 // @Param request body dto.AuthDto true "Authenticates user and return a new JWT token"
 // @Router /auth [post]
@@ -33,7 +33,7 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		httputils.WriteError(w, &models.CustomError{
 			Code:    http.StatusUnauthorized,
-			Message: "Authentication failed",
+			Message: err.Message,
 		})
 		return
 	}
