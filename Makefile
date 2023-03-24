@@ -10,7 +10,8 @@ clean:
 	docker compose stop server
 	docker rmi ${IMAGE_ID} -f
 
-clean-db: clean-all
+clean-db:
+	docker compose stop mysql_db
 	docker rmi ${DB_IMAGE_ID} -f
 
 clean-test-db:
@@ -27,7 +28,7 @@ run:
 run-tests:
 	docker compose up t_server -d
 
-run-clean: clean run
+run-clean: clean-db clean down run
 
 run-tests-clean: clean-tests clean-test-db down run-tests
 
