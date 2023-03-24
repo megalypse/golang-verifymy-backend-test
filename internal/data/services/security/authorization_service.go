@@ -7,6 +7,6 @@ import (
 )
 
 type AuthorizationService interface {
-	AssignRole(ctx context.Context, userId int64, roleAlias string) *models.CustomError
+	AssignRole(ctx context.Context, userId int64, roleId int64) *models.CustomError
 	GetUserRoles(ctx context.Context, userId int64) ([]models.Role, *models.CustomError)
 }

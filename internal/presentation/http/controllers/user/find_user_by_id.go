@@ -3,6 +3,7 @@ package usercontroller
 import (
 	"net/http"
 
+	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	_ "github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
 )
@@ -35,9 +36,9 @@ func (uc UserController) findUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputils.WriteJsonResponse(w, httputils.HttpResponse{
-		HttpStatus: http.StatusFound,
+	httputils.WriteJsonResponse(w, httputils.HttpResponse[models.User]{
+		HttpStatus: http.StatusOK,
 		Message:    "User successfully fetched",
-		Content:    user,
+		Content:    *user,
 	})
 }

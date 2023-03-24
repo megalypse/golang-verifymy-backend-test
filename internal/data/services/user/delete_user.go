@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+	factory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 )
 
 func (us UserService) Delete(ctx context.Context, id int64) *models.CustomError {
-	connection := us.userRepository.NewConnection(ctx)
+	connection := factory.NewSqlConnection(ctx)
 	defer connection.CloseConnection()
 
 	tx, err := connection.BeginTransaction()

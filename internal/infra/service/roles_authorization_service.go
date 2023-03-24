@@ -5,6 +5,7 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
+	factory "github.com/megalypse/golang-verifymy-backend-test/internal/factory/repository/mysql"
 )
 
 type RolesAuthorizationService struct {
@@ -13,7 +14,7 @@ type RolesAuthorizationService struct {
 }
 
 func (as RolesAuthorizationService) GetUserRoles(ctx context.Context, userId int64) ([]models.Role, *models.CustomError) {
-	conn := as.RolesRepository.NewConnection(ctx)
+	conn := factory.NewSqlConnection(ctx)
 	defer conn.CloseConnection()
 
 	tx, err := conn.BeginTransaction()
@@ -35,8 +36,8 @@ func (as RolesAuthorizationService) GetUserRoles(ctx context.Context, userId int
 	return roles, nil
 }
 
-func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64, roleAlias string) *models.CustomError {
-	conn := as.RolesRepository.NewConnection(ctx)
+func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64, roleId int64) *models.CustomError {
+	conn := factory.NewSqlConnection(ctx)
 	defer conn.CloseConnection()
 
 	tx, err := conn.BeginTransaction()
@@ -44,7 +45,7 @@ func (as RolesAuthorizationService) AssignRole(ctx context.Context, userId int64
 		return err
 	}
 
-	role, err := as.RolesRepository.FindByAlias(tx, roleAlias)
+	role, err := as.RolesRepository.FindById(tx, roleId)
 	if err != nil {
 		tx.Rollback()
 		return err

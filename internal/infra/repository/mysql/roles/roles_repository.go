@@ -5,20 +5,18 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
-	repositorymysql "github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
 
 type MySqlRolesRepository struct {
-	repositorymysql.BaseMySqlRepository
 }
 
-func (rp MySqlRolesRepository) FindByAlias(tx repository.Transaction, roleAlias string) (*models.Role, *models.CustomError) {
+func (rp MySqlRolesRepository) FindById(tx repository.Transaction, roleId int64) (*models.Role, *models.CustomError) {
 	result, err := tx.Query(`
 	SELECT * FROM roles
-	WHERE alias = ?
+	WHERE id = ?
 	LIMIT 1
-	`, roleAlias)
+	`, roleId)
 
 	if err != nil {
 		return nil, err

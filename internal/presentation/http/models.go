@@ -9,10 +9,10 @@ type ParsedRequest[T any] struct {
 	Params map[string]string
 }
 
-type HttpResponse struct {
+type HttpResponse[T any] struct {
 	HttpStatus int    `json:"http_status"`
 	Message    string `json:"message"`
-	Content    any    `json:"content"`
+	Content    T      `json:"content"`
 }
 
 type BaseController interface {

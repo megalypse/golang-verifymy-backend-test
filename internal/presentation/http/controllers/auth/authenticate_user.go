@@ -6,12 +6,12 @@ import (
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
 	httputils "github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http"
-	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/auth/dto"
+	"github.com/megalypse/golang-verifymy-backend-test/internal/presentation/http/controllers/dto"
 )
 
 // @Summary Authenticate user with email and password
 // @Tags Auth
-// @Success 201 {object} httputils.HttpResponse
+// @Success 201 {object} httputils.HttpResponse[string]
 // @Failure 500 {object} models.CustomError "Internal Server Error"
 // @Param request body dto.AuthDto true "Authenticates user and return a new JWT token"
 // @Router /auth [post]
@@ -31,7 +31,10 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 
 	user, err = ac.AuthUserUsecase.SignIn(r.Context(), user)
 	if err != nil {
-		httputils.WriteError(w, err)
+		httputils.WriteError(w, &models.CustomError{
+			Code:    http.StatusUnauthorized,
+			Message: err.Message,
+		})
 		return
 	}
 
@@ -54,7 +57,7 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	httputils.WriteJsonResponse(w, httputils.HttpResponse{
+	httputils.WriteJsonResponse(w, httputils.HttpResponse[string]{
 		HttpStatus: 200,
 		Message:    "User successfully authenticated",
 		Content:    token,

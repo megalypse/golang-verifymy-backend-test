@@ -6,6 +6,8 @@ WORKDIR /app
 COPY . .
 
 RUN go get ./...
+RUN go get github.com/swaggo/swag/gen
+RUN go get github.com/swaggo/swag/cmd/swag
 RUN go install github.com/swaggo/swag/cmd/swag
 RUN swag init -g /internal/factory/router/routes.go --pd
 RUN GOARCH=amd64 GOOS=linux go build -o ./bin/server ./cmd/server/main.go

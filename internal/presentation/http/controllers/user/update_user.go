@@ -28,9 +28,9 @@ func (uc UserController) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httputils.WriteJsonResponse(w, httputils.HttpResponse{
+	httputils.WriteJsonResponse(w, httputils.HttpResponse[models.User]{
 		HttpStatus: http.StatusOK,
 		Message:    "User successfully updated",
-		Content:    updatedUser,
+		Content:    *updatedUser,
 	})
 }
