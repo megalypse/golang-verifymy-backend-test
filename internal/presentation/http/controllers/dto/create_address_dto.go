@@ -20,6 +20,6 @@ func (ad CreateAddressDto) ToAddress() *models.Address {
 		Number:       ad.Number,
 		State:        ad.State,
 		Country:      ad.Country,
-		UserId:       0,
+		UserId:       ad.UserId,
 	}
 }

@@ -32,7 +32,7 @@ func (ac AddressController) GetHandlers() []httputils.RouteDefinition {
 		},
 		{
 			Method:        http.MethodDelete,
-			Route:         "/address/{addressid}",
+			Route:         "/address/{addressId}",
 			RequiredRoles: []string{roles.DELETE},
 			HandlingFunc:  ac.deleteAddress,
 		},
@@ -45,6 +45,7 @@ func (ac AddressController) GetHandlers() []httputils.RouteDefinition {
 // @Failure 500 {object} models.CustomError "Internal Server Error"
 // @Param request body models.Address true "Address model"
 // @Router /address [put]
+// @Security ApiKeyAuth
 func (ac AddressController) updateAddress(w http.ResponseWriter, r *http.Request) {
 	req, err := httputils.ParseRequest[models.Address](r, nil)
 	if err != nil {
@@ -73,19 +74,21 @@ func (ac AddressController) updateAddress(w http.ResponseWriter, r *http.Request
 // @Router /address/{addressId} [delete]
 // @Security ApiKeyAuth
 func (ac AddressController) deleteAddress(w http.ResponseWriter, r *http.Request) {
-	req, err := httputils.ParseRequest[any](r, &[]string{"addressId"})
+	param := "addressId"
+	req, err := httputils.ParseRequest[httputils.Void](r, &[]string{param})
 	if err != nil {
 		httputils.WriteError(w, err)
 		return
 	}
 
-	addressId, err := httputils.ParseId(req.Params["addressId"])
+	addressId, err := httputils.ParseId(req.Params[param])
 	if err != nil {
 		httputils.WriteError(w, &models.CustomError{
 			Code:    err.Code,
 			Message: err.Message,
 			Source:  err.Source,
 		})
+		return
 	}
 
 	if err = ac.DeleteAddressUsecase.Delete(r.Context(), addressId); err != nil {

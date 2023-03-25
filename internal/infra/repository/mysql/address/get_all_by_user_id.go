@@ -9,7 +9,7 @@ import (
 )
 
 func (MySqlAddressRepository) GetAllByUserId(tx repository.Transaction, userId int64) ([]models.Address, *models.CustomError) {
-	result, err := tx.Query(`SELECT * FROM addresses WHERE user_id = ?`, userId)
+	result, err := tx.Query(`SELECT * FROM addresses WHERE user_id = ? AND deleted_at IS NULL`, userId)
 	if err != nil {
 		return nil, err
 	}

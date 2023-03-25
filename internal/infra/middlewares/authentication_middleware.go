@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -24,7 +23,6 @@ func VerifyJwt(next http.Handler) http.Handler {
 
 		rawToken := r.Header.Get("Authorization")
 		if rawToken == "" {
-			log.Println(1)
 			httputils.WriteError(w, unauthorizedError)
 			return
 		}
@@ -56,7 +54,6 @@ func VerifyJwt(next http.Handler) http.Handler {
 
 			isValid := checkTokenExpiration(claims)
 			if !isValid {
-				log.Println(2)
 				httputils.WriteError(w, unauthorizedError)
 				return
 			}
@@ -66,7 +63,6 @@ func VerifyJwt(next http.Handler) http.Handler {
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
-			log.Println(3)
 			httputils.WriteError(w, unauthorizedError)
 			return
 		}

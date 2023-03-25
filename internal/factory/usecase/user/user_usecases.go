@@ -15,8 +15,8 @@ var findUserByIdUsecase usecases.FindUserById
 func init() {
 	userService := service.NewUserService(
 		repositoryFactory.GetUserRepository(),
-		repositoryFactory.GetMySqlUserPasswordRepository(),
-		repositoryFactory.GetMySqlAddressRepository(),
+		repositoryFactory.GetUserPasswordRepository(),
+		repositoryFactory.GetAddressRepository(),
 		securityFactory.GetBCryptSecurityService(),
 	)
 

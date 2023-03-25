@@ -12,10 +12,13 @@ import (
 
 func (MySqlAddressRepository) Delete(tx repository.Transaction, id int64) *models.CustomError {
 	result, err := tx.Exec(`
-	UPDATE addresses
-	SET deleted_at = CURRENT_TIMESTAMP
-	WHERE id = ?
-	`)
+	UPDATE addresses a
+		INNER JOIN users u ON a.id = u.id
+	SET a.deleted_at = CURRENT_TIMESTAMP
+	WHERE a.id = ?
+		AND a.deleted_at IS NULL
+		AND u.deleted_at IS NULL
+	`, id)
 	if err != nil {
 		return err
 	}

@@ -11,6 +11,6 @@ func init() {
 	rolesRepository = repositorymysql.MySqlRolesRepository{}
 }
 
-func GetMySqlRolesRepository() repository.RolesRepository {
+func GetRolesRepository() repository.RolesRepository {
 	return rolesRepository
 }

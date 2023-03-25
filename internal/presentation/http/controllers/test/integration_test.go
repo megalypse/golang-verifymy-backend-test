@@ -3,8 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -291,9 +289,6 @@ func makeRequest[T any](method, url string, rawBody any, h map[string]string) ht
 	response := httputils.HttpResponse[T]{
 		Content: *content,
 	}
-
-	bytes, _ := io.ReadAll(req.Body)
-	log.Println(string(bytes))
 
 	json.NewDecoder(res.Body).Decode(&response)
 

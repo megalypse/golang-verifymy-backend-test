@@ -9,7 +9,7 @@ import (
 )
 
 func (MySqlAddressRepository) FindById(tx repository.Transaction, addressId int64) (*models.Address, *models.CustomError) {
-	result, err := tx.Query(`SELECT * FROM addresses WHERE id = ? LIMIT 1`, addressId)
+	result, err := tx.Query(`SELECT * FROM addresses WHERE id = ? AND deleted_at IS NULL LIMIT 1`, addressId)
 	if err != nil {
 		return nil, err
 	}

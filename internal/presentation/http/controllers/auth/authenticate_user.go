@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
@@ -31,10 +30,7 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 
 	user, err = ac.AuthUserUsecase.SignIn(r.Context(), user)
 	if err != nil {
-		httputils.WriteError(w, &models.CustomError{
-			Code:    http.StatusUnauthorized,
-			Message: err.Message,
-		})
+		httputils.WriteError(w, err)
 		return
 	}
 
@@ -48,8 +44,6 @@ func (ac AuthController) authenticateUser(w http.ResponseWriter, r *http.Request
 	for _, v := range roles {
 		userRoles = append(userRoles, v.Alias)
 	}
-
-	log.Println(userRoles)
 
 	token, err := ac.AuthenticationService.GenerateJwtToken(request.Body.Email, userRoles)
 	if err != nil {

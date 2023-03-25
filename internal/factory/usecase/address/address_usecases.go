@@ -12,7 +12,8 @@ var deleteAddressUsecase address.DeleteAddress
 
 func init() {
 	addressService := addressService.AddressService{
-		AddressRepository: factory.GetMySqlAddressRepository(),
+		AddressRepository: factory.GetAddressRepository(),
+		UserRepository:    factory.GetUserRepository(),
 	}
 
 	createAddressUsecase = addressService

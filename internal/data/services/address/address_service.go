@@ -6,4 +6,5 @@ import (
 
 type AddressService struct {
 	AddressRepository repository.AddressRepository
+	UserRepository    repository.UserRepository
 }

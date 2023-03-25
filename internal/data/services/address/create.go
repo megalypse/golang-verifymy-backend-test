@@ -16,6 +16,12 @@ func (as AddressService) Create(ctx context.Context, source *models.Address) (*m
 		return nil, err
 	}
 
+	_, err = as.UserRepository.FindById(tx, source.UserId)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
 	addressId, err := as.AddressRepository.Create(tx, source)
 	if err != nil {
 		tx.Rollback()
@@ -28,6 +34,10 @@ func (as AddressService) Create(ctx context.Context, source *models.Address) (*m
 	}
 
 	tx, err = conn.BeginTransaction()
+	if err != nil {
+		return nil, err
+	}
+
 	address, err := as.AddressRepository.FindById(tx, addressId)
 	if err != nil {
 		tx.Rollback()
