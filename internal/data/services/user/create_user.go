@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"net/mail"
+	"unicode"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
@@ -9,6 +12,22 @@ import (
 )
 
 func (us UserService) Create(ctx context.Context, source *models.User) (*models.User, *models.CustomError) {
+	isValidEmail := isEmailValid(source.Email)
+	if !isValidEmail {
+		return nil, &models.CustomError{
+			Code:    http.StatusUnprocessableEntity,
+			Message: "Email must be a valid email",
+		}
+	}
+
+	isPasswordMinSafe := checkPasswordConstraints(string(source.UserPassword.Password))
+	if !isPasswordMinSafe {
+		return nil, &models.CustomError{
+			Code:    http.StatusUnprocessableEntity,
+			Message: "Password must have minimum of 6 characters, contain a symbol, a number and an uppercase letter",
+		}
+	}
+
 	protectedUserPassword, err := us.securityService.SecureUserPassword(source.UserPassword)
 	if err != nil {
 		return nil, err
@@ -107,4 +126,31 @@ func (us UserService) saveUserPassword(tx repository.Transaction, source models.
 	}
 
 	return userPasswordId, nil
+}
+
+func isEmailValid(email string) bool {
+	_, err := mail.ParseAddress(email)
+
+	return err == nil
+}
+
+func checkPasswordConstraints(password string) bool {
+	minLength := 6
+	maxLength := 200
+
+	isMinLength := len(password) >= minLength
+	isMaxValid := len(password) <= maxLength
+	haveSymbol := false
+	haveUpper := false
+	haveNumber := false
+	haveLetter := false
+
+	for _, v := range password {
+		haveSymbol = haveSymbol || (unicode.IsPunct(v) || unicode.IsSymbol(v))
+		haveUpper = haveUpper || unicode.IsUpper(v)
+		haveNumber = haveNumber || unicode.IsNumber(v)
+		haveLetter = haveLetter || unicode.IsLetter(v)
+	}
+
+	return isMinLength && isMaxValid && haveSymbol && haveUpper && haveNumber && haveLetter
 }
