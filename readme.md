@@ -2,13 +2,16 @@
 
 # HOW TO RUN THE APPLICATION
 
-1. Run `make run-compose`
+1. Run `make run`
 
 Check `http://localhost:3001/swagger/index.html` for Swagger Documentation.
 
 ---
 ## Walkthrough
-Use swagger to be able easily call the endpoints and check their signatures.
+* The server is hosted by default on port `3001`. But it's possible to change it through the `.env` file. Just like most
+of the configurations related to DB and server
+
+* Use swagger to be able easily call the endpoints and check their signatures.
 
 # Makefile commands
 * `down`: The same as `docker compose down --remove-orphans`
