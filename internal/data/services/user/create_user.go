@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"net/mail"
 
 	"github.com/megalypse/golang-verifymy-backend-test/internal/data/repository"
 	"github.com/megalypse/golang-verifymy-backend-test/internal/domain/models"
@@ -12,6 +14,14 @@ func (us UserService) Create(ctx context.Context, source *models.User) (*models.
 	protectedUserPassword, err := us.securityService.SecureUserPassword(source.UserPassword)
 	if err != nil {
 		return nil, err
+	}
+
+	isValidEmail := isEmailValid(source.Email)
+	if !isValidEmail {
+		return nil, &models.CustomError{
+			Code:    http.StatusUnprocessableEntity,
+			Message: "Email must be a valid email",
+		}
 	}
 
 	connection := factory.NewSqlConnection(ctx)
@@ -107,4 +117,10 @@ func (us UserService) saveUserPassword(tx repository.Transaction, source models.
 	}
 
 	return userPasswordId, nil
+}
+
+func isEmailValid(email string) bool {
+	_, err := mail.ParseAddress(email)
+
+	return err == nil
 }

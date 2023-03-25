@@ -75,6 +75,15 @@ func TestCreateUser(t *testing.T) {
 		assert.Equal(http.StatusConflict, response.HttpStatus)
 	})
 
+	t.Run("Should fail to create new user due to invalid email", func(t *testing.T) {
+		newUserDto := makeNewUserDto()
+		newUserDto.Email = "invalid email"
+
+		response := makeRequest[string](http.MethodPost, makeUrl("/user"), newUserDto, nil)
+
+		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
+	})
+
 }
 
 func TestAuthentication(t *testing.T) {
