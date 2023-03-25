@@ -50,10 +50,10 @@ func TestCreateUser(t *testing.T) {
 		response := makeRequest[models.User](http.MethodPost, makeUrl("/user"), makeNewUserDto(), nil)
 		user := response.Content
 
+		assert.Equal(http.StatusOK, response.HttpStatus)
+
 		addressDto := userDto.Address
 		address := user.AddressList[0]
-
-		assert.Equal(http.StatusOK, response.HttpStatus)
 
 		assert.Equal(int64(1), user.Id)
 		assert.Equal(userDto.Name, user.Name)
@@ -84,6 +84,33 @@ func TestCreateUser(t *testing.T) {
 		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
 	})
 
+	t.Run("Should fail to create new user due to invalid password", func(t *testing.T) {
+		newUserDto := makeNewUserDto()
+
+		newUserDto.Password = "1A@a"
+		response := makeRequest[string](http.MethodPost, makeUrl("/user"), newUserDto, nil)
+		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
+
+		newUserDto.Password = "aaaaaa"
+		response = makeRequest[string](http.MethodPost, makeUrl("/user"), newUserDto, nil)
+		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
+
+		newUserDto.Password = "@aaaaa"
+		response = makeRequest[string](http.MethodPost, makeUrl("/user"), newUserDto, nil)
+		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
+
+		newUserDto.Password = "@aaaa1"
+		response = makeRequest[string](http.MethodPost, makeUrl("/user"), newUserDto, nil)
+		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
+
+		extremelyLargePassword := "A@1"
+		for i := 0; i < 198; i++ {
+			extremelyLargePassword += "a"
+		}
+		newUserDto.Password = extremelyLargePassword
+		response = makeRequest[string](http.MethodPost, makeUrl("/user"), newUserDto, nil)
+		assert.Equal(http.StatusUnprocessableEntity, response.HttpStatus)
+	})
 }
 
 func TestAuthentication(t *testing.T) {
@@ -351,7 +378,7 @@ func makeNewUserDto() dto.CreateUserDto {
 		Name:     "John Doe",
 		Age:      36,
 		Email:    EMAIL_1,
-		Password: "password+123",
+		Password: "passWord+123",
 		Address:  makeNewAddressDto(),
 	}
 }
