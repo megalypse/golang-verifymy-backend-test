@@ -14,4 +14,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Build and test
-      run: docker-compose up --exit-code-from t_server
+      run: docker-compose up t_server --exit-code-from t_server
