@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -98,7 +97,6 @@ func TestAuthentication(t *testing.T) {
 			Password: "wrong password",
 		}, nil)
 
-		log.Println(response.Message)
 		assert.Equal(http.StatusUnauthorized, response.HttpStatus)
 		assert.Empty(response.Content)
 	})

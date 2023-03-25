@@ -36,7 +36,6 @@ func makeMainConnection(connectionStr string) *sql.DB {
 
 	const healthcheckAmt int = 5
 	for i := 0; i < healthcheckAmt; i++ {
-		log.Println("Trying to connect to " + connectionStr)
 		err = db.Ping()
 		if err == nil {
 			break
