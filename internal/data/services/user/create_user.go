@@ -137,7 +137,7 @@ func isEmailValid(email string) bool {
 func checkPasswordConstraints(pwd string) (bool, string) {
 	return password.IsPasswordValid(
 		pwd,
-		password.PasswordMinLen(pwd, 59),
+		password.PasswordMinLen(pwd, 6),
 		password.PasswordMaxLen(pwd, 200),
 		password.HaveSymbol,
 		password.HaveNumber,
