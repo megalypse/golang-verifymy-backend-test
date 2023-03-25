@@ -18,7 +18,7 @@ clean-test-db:
 	docker compose stop mysql_t_db
 	docker rmi ${TESTS_DB_IMAGE_ID} -f
 
-clean-tests:
+clean-test:
 	docker compose stop t_server
 	docker rmi ${TESTS_IMAGE_ID} -f
 
