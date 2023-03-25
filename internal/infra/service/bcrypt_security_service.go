@@ -28,8 +28,8 @@ func (BCryptSecurityService) Compare(hashedPassword []byte, plainpassword []byte
 	err := bcrypt.CompareHashAndPassword(hashedPassword, plainpassword)
 	if err != nil {
 		return &models.CustomError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
+			Code:    http.StatusUnauthorized,
+			Message: http.StatusText(http.StatusUnauthorized),
 			Source:  err,
 		}
 	}
