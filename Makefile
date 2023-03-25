@@ -32,5 +32,5 @@ run-clean: clean run
 
 run-clean-all: clean-db clean down run
 
-run-tests-clean: clean-tests clean-test-db down run-tests
+run-tests-clean: clean-test clean-test-db down run-tests
 
