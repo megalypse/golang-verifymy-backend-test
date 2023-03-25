@@ -13,5 +13,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Build and test
-      run: |
-        docker-compose up t_server --abort-on-container-exit
+      run: docker-compose up t_server
