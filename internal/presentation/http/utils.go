@@ -62,7 +62,7 @@ func ParseId(source string) (int64, *models.CustomError) {
 	if err != nil {
 		return 0, &models.CustomError{
 			Code:    500,
-			Message: "Failed on parsing user id",
+			Message: "Failed on parsing id param: " + err.Error(),
 			Source:  err,
 		}
 	}

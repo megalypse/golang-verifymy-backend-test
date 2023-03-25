@@ -11,7 +11,7 @@ var authUserUsecase authUsecases.UserSignIn
 
 func init() {
 	authUserUsecase = signin.NewUserEmailAuth(
-		repositoryFactory.GetMySqlUserPasswordRepository(),
+		repositoryFactory.GetUserPasswordRepository(),
 		repositoryFactory.GetUserRepository(),
 		service.GetBCryptSecurityService(),
 	)

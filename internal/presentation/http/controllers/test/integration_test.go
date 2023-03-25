@@ -3,7 +3,7 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"io"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -92,12 +92,13 @@ func TestAuthentication(t *testing.T) {
 		assert.NotEmpty(response.Content)
 	})
 
-	t.Run("Should fail to create new user due to already in use email", func(t *testing.T) {
+	t.Run("Should fail wrong credentials", func(t *testing.T) {
 		response := makeRequest[string](http.MethodPost, makeUrl("/auth"), dto.AuthDto{
 			Email:    user.Email,
 			Password: "wrong password",
 		}, nil)
 
+		log.Println(response.Message)
 		assert.Equal(http.StatusUnauthorized, response.HttpStatus)
 		assert.Empty(response.Content)
 	})
@@ -191,12 +192,96 @@ func TestUpdateUser(t *testing.T) {
 	})
 }
 
+func TestCreateAddress(t *testing.T) {
+	assert := assert.New(t)
+
+	t.Run("Should successfully add a new address to the user", func(t *testing.T) {
+		grantRole(getAuthToken(), CREATE)
+
+		jwt := getAuthToken()
+
+		newAddressDto := makeNewAddressDto()
+		response := makeRequest[models.Address](http.MethodPost, makeUrl("/address"), newAddressDto, makeAuthenticationHeader(jwt))
+
+		assert.Equal(http.StatusOK, response.HttpStatus)
+	})
+
+	t.Run("User now should have two active addresses", func(t *testing.T) {
+		user := findUserById("1", getAuthToken())
+
+		assert.Equal(2, len(user.Content.AddressList))
+	})
+
+	t.Run("Should fail due to user not found", func(t *testing.T) {
+		jwt := getAuthToken()
+
+		newAddressDto := makeNewAddressDto()
+		newAddressDto.UserId = 99
+		response := makeRequest[models.Address](http.MethodPost, makeUrl("/address"), newAddressDto, makeAuthenticationHeader(jwt))
+
+		assert.Equal(http.StatusNotFound, response.HttpStatus)
+	})
+}
+
+var remainerAddressId int64
+
+func TestDeleteAddress(t *testing.T) {
+	assert := assert.New(t)
+	var deletedAddressId int64
+
+	t.Run("Should delete the address with no errors", func(t *testing.T) {
+		jwt := getAuthToken()
+		grantRole(jwt, DELETE)
+		jwt = getAuthToken()
+
+		user := findUserById("1", jwt).Content
+		address := user.AddressList[0]
+
+		response := deleteAddress(jwt, address.Id)
+		assert.Equal(http.StatusOK, response.HttpStatus)
+
+		user = findUserById("1", jwt).Content
+		assert.Equal(1, len(user.AddressList))
+
+		deletedAddressId = address.Id
+		remainerAddressId = user.AddressList[0].Id
+	})
+
+	t.Run("Should fail due to address inactive/not found", func(t *testing.T) {
+		jwt := getAuthToken()
+
+		response := deleteAddress(jwt, deletedAddressId)
+		assert.Equal(http.StatusNotFound, response.HttpStatus)
+
+		response2 := deleteAddress(jwt, 99)
+		assert.Equal(http.StatusNotFound, response2.HttpStatus)
+	})
+}
+
+func TestUpdateAddress(t *testing.T) {
+	assert := assert.New(t)
+
+	t.Run("Should successfully update the address", func(t *testing.T) {
+		jwt := getAuthToken()
+		user := findUserById("1", jwt)
+		address := user.Content.AddressList[0]
+		addressUpdateDto := address
+		addressUpdateDto.AddressAlias = "Work"
+
+		response := makeRequest[models.Address](http.MethodPut, makeUrl("/address"), addressUpdateDto, makeAuthenticationHeader(jwt))
+		updatedAddress := response.Content
+
+		assert.Equal(http.StatusOK, response.HttpStatus)
+		assert.Equal(address.Id, updatedAddress.Id)
+		assert.NotEqual(address.AddressAlias, updatedAddress.AddressAlias)
+		assert.NotNil(updatedAddress.CreatedAt)
+	})
+}
+
 func TestDeleteUser(t *testing.T) {
 	assert := assert.New(t)
 
 	t.Run("Should fail due to user not found", func(t *testing.T) {
-		grantRole(getAuthToken(), DELETE)
-
 		jwt := getAuthToken()
 		resp := deleteUser("2", jwt)
 
@@ -260,14 +345,19 @@ func makeNewUserDto() dto.CreateUserDto {
 		Age:      36,
 		Email:    EMAIL_1,
 		Password: "password+123",
-		Address: dto.CreateAddressDto{
-			Alias:      "Home",
-			ZipCode:    "00000",
-			StreetName: "Generic Street",
-			Number:     "007",
-			State:      "GS",
-			Country:    "GC",
-		},
+		Address:  makeNewAddressDto(),
+	}
+}
+
+func makeNewAddressDto() dto.CreateAddressDto {
+	return dto.CreateAddressDto{
+		Alias:      "Home",
+		ZipCode:    "00000",
+		StreetName: "Generic Street",
+		Number:     "007",
+		State:      "GS",
+		Country:    "GC",
+		UserId:     1,
 	}
 }
 
@@ -292,10 +382,11 @@ func makeRequest[T any](method, url string, rawBody any, h map[string]string) ht
 		Content: *content,
 	}
 
-	bytes, _ := io.ReadAll(req.Body)
-	log.Println(string(bytes))
-
 	json.NewDecoder(res.Body).Decode(&response)
 
 	return response
+}
+
+func deleteAddress(jwt string, addressId int64) httputils.HttpResponse[any] {
+	return makeRequest[any](http.MethodDelete, makeUrl("/address/"+fmt.Sprint(addressId)), nil, makeAuthenticationHeader(jwt))
 }

@@ -11,6 +11,6 @@ func init() {
 	addressRepository = mysqlAddressRepository.MySqlAddressRepository{}
 }
 
-func GetMySqlAddressRepository() repository.AddressRepository {
+func GetAddressRepository() repository.AddressRepository {
 	return addressRepository
 }

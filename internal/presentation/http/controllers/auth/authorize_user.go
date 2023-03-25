@@ -15,6 +15,7 @@ import (
 // @Failure 500 {object} models.CustomError "Internal Server Error"
 // @Param request body dto.AuthorizeUserDto true "Authorizes an user with the received role"
 // @Router /auth/authorize [post]
+// @Security ApiKeyAuth
 func (ac AuthController) authorizeUser(w http.ResponseWriter, r *http.Request) {
 	request, err := httputils.ParseRequest[dto.AuthorizeUserDto](r, nil)
 	if err != nil {

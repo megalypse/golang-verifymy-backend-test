@@ -8,17 +8,17 @@ import (
 	"github.com/megalypse/golang-verifymy-backend-test/internal/infra/repository/mysql/mappers"
 )
 
-func (MySqlAddressRepository) GetAllByUserId(tx repository.Transaction, userId int64) ([]models.Address, *models.CustomError) {
-	result, err := tx.Query(`SELECT * FROM addresses WHERE user_id = ? AND deleted_at IS NULL`, userId)
+func (MySqlAddressRepository) FindById(tx repository.Transaction, addressId int64) (*models.Address, *models.CustomError) {
+	result, err := tx.Query(`SELECT * FROM addresses WHERE id = ? AND deleted_at IS NULL LIMIT 1`, addressId)
 	if err != nil {
 		return nil, err
 	}
 
 	rows := result.(*sql.Rows)
-	addressList, err := mappers.MapMany(mappers.AddressMapperFunc, rows)
+	address, err := mappers.MapOne(mappers.AddressMapperFunc, rows)
 	if err != nil {
 		return nil, err
 	}
 
-	return addressList, nil
+	return address, nil
 }

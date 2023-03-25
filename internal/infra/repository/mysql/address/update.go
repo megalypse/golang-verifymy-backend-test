@@ -13,8 +13,8 @@ func (MySqlAddressRepository) Update(tx repository.Transaction, source *models.A
 	result, err := tx.Exec(`
 	UPDATE addresses
 	SET alias = ?, zipcode = ?, street_name = ?, number = ?, state = ?, country = ?
-	WHERE id = ?
-	`, source.Id, source.AddressAlias, source.ZipCode, source.StreetName, source.Number, source.State, source.Country)
+	WHERE id = ? AND deleted_at IS NULL
+	`, source.AddressAlias, source.ZipCode, source.StreetName, source.Number, source.State, source.Country, source.Id)
 	if err != nil {
 		return err
 	}

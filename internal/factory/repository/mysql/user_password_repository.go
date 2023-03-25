@@ -11,6 +11,6 @@ func init() {
 	userPasswordRepository = repositorymysql.MySqlUserPasswordRepository{}
 }
 
-func GetMySqlUserPasswordRepository() repository.UserPasswordRepository {
+func GetUserPasswordRepository() repository.UserPasswordRepository {
 	return userPasswordRepository
 }

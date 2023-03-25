@@ -10,8 +10,8 @@ var authorizationService security.AuthorizationService
 
 func init() {
 	authorizationService = service.RolesAuthorizationService{
-		RolesRepository:     repositoryFactory.GetMySqlRolesRepository(),
-		UserRolesRepository: repositoryFactory.GetMySqlUserRolesRepository(),
+		RolesRepository:     repositoryFactory.GetRolesRepository(),
+		UserRolesRepository: repositoryFactory.GetUserRolesRepository(),
 	}
 }
 
