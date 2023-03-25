@@ -1,0 +1,64 @@
+services:
+  mysql_db:
+    build:
+      context: .
+      dockerfile: mysql_db.dockerfile
+    image: verifymy_mysql_db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_TCP_PORT: ${MYSQL_DB_CONTAINER_PORT}
+    ports:
+      - "${MYSQL_DB_HOST_PORT}:${MYSQL_DB_CONTAINER_PORT}"
+
+  server:
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    image: verifymy_backend_test_golang_server
+    environment:
+      MYSQL_DB_HOST: mysql_db
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB_PORT: ${MYSQL_DB_CONTAINER_PORT}
+      MYSQL_DB_NAME: ${MYSQL_DB}
+      SERVER_CONTAINER_PORT: ${SERVER_CONTAINER_PORT}
+      SERVER_HOST_PORT: ${SERVER_HOST_PORT}
+      AUTH_SECRET: ${AUTH_SECRET}
+    depends_on:
+      - mysql_db
+    ports:
+      - "${SERVER_HOST_PORT}:${SERVER_CONTAINER_PORT}"
+
+  mysql_t_db:
+    build:
+      context: .
+      dockerfile: mysql_db.dockerfile
+    image: verifymy_mysql_t_db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_TCP_PORT: ${MYSQL_T_DB_CONTAINER_PORT}
+    ports:
+      - "${MYSQL_T_DB_HOST_PORT}:${MYSQL_T_DB_CONTAINER_PORT}"
+
+  t_server:
+    build:
+      context: .
+      dockerfile: test_server.dockerfile
+    image: verifymy_backend_test_golang_server_t
+    environment:
+      MYSQL_DB_HOST: mysql_t_db
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB_PORT: ${MYSQL_T_DB_CONTAINER_PORT}
+      MYSQL_DB_NAME: ${MYSQL_DB}
+      SERVER_CONTAINER_PORT: ${T_SERVER_CONTAINER_PORT}
+      SERVER_HOST_PORT: ${T_SERVER_HOST_PORT}
+      AUTH_SECRET: ${AUTH_SECRET}
+    depends_on:
+      - mysql_t_db
+    ports:
+      - "${T_SERVER_HOST_PORT}:${T_SERVER_CONTAINER_PORT}"
